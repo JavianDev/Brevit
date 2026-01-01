@@ -1,0 +1,6 @@
+{
+  "name": "complex_json",
+  "type": "json",
+  "inputPath": "tests/shared/inputs/json/complex.json",
+  "intent": "Extract the hikes and companions."
+}

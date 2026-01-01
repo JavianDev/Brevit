@@ -1,0 +1,6 @@
+{
+  "name": "edgecases_json",
+  "type": "json",
+  "inputPath": "tests/shared/inputs/json/edgecases.json",
+  "intent": "Identify nulls/empties and deepest value."
+}

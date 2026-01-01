@@ -1,0 +1,15 @@
+{
+  "name": "brevit-tests",
+  "version": "1.0.0",
+  "description": "Test suite for Brevit JavaScript implementation",
+  "type": "module",
+  "scripts": {
+    "test:basic": "node test-basic.js",
+    "test:complex": "node test-complex.js",
+    "test:abbreviations": "node test-abbreviations.js",
+    "test:all": "node test-basic.js && node test-complex.js && node test-abbreviations.js",
+    "fixtures": "node run-fixtures.js",
+    "fixtures:save": "node run-fixtures.js --save"
+  }
+}
+

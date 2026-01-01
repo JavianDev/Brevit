@@ -1,0 +1,7 @@
+The intent is to extract a short checklist. 
+
+Here is the extracted checklist:
+
+1. Reduce token usage for LLM prompts
+2. Keep data readable
+3. Work across JavaScript, Python, and .NET

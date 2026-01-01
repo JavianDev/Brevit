@@ -1,0 +1,6 @@
+{
+  "name": "invoice_image",
+  "type": "image",
+  "inputPath": "tests/shared/inputs/images/invoice.png",
+  "intent": "Extract invoice number and total."
+}

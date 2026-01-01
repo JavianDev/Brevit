@@ -1,0 +1,139 @@
+{
+  "simple": {
+    "user": {
+      "name": "John Doe",
+      "email": "john@example.com",
+      "age": 30
+    }
+  },
+  "complex": {
+    "context": {
+      "task": "Our favorite hikes together",
+      "location": "Boulder",
+      "season": "spring_2025"
+    },
+    "friends": ["ana", "luis", "sam"],
+    "hikes": [
+      {
+        "id": 1,
+        "name": "Blue Lake Trail",
+        "distanceKm": 7.5,
+        "elevationGain": 320,
+        "companion": "ana",
+        "wasSunny": true
+      },
+      {
+        "id": 2,
+        "name": "Ridge Overlook",
+        "distanceKm": 9.2,
+        "elevationGain": 540,
+        "companion": "luis",
+        "wasSunny": false
+      }
+    ]
+  },
+  "ecommerce": {
+    "orderId": "o-456",
+    "customer": {
+      "id": "c-123",
+      "name": "Jane Smith",
+      "email": "jane@example.com",
+      "address": {
+        "street": "123 Main St",
+        "city": "Toronto",
+        "province": "ON",
+        "postalCode": "M5H 2N2"
+      }
+    },
+    "items": [
+      {
+        "sku": "A-88",
+        "name": "Product A",
+        "quantity": 2,
+        "price": 29.99
+      },
+      {
+        "sku": "B-22",
+        "name": "Product B",
+        "quantity": 1,
+        "price": 49.99
+      },
+      {
+        "sku": "C-33",
+        "name": "Product C",
+        "quantity": 3,
+        "price": 19.99
+      }
+    ],
+    "shipping": {
+      "method": "express",
+      "cost": 15.99,
+      "estimatedDays": 2
+    },
+    "total": 185.94
+  },
+  "nested": {
+    "user": {
+      "profile": {
+        "personal": {
+          "firstName": "John",
+          "lastName": "Doe",
+          "birthDate": "1990-01-15"
+        },
+        "contact": {
+          "email": "john@example.com",
+          "phone": "+1-555-0123"
+        },
+        "settings": {
+          "theme": "dark",
+          "notifications": true,
+          "language": "en"
+        }
+      },
+      "orders": [
+        {
+          "orderId": "o-001",
+          "status": "completed",
+          "items": [
+            {"sku": "A-1", "qty": 1},
+            {"sku": "B-2", "qty": 2}
+          ]
+        },
+        {
+          "orderId": "o-002",
+          "status": "pending",
+          "items": [
+            {"sku": "C-3", "qty": 3}
+          ]
+        }
+      ]
+    }
+  },
+  "edgeCases": {
+    "nullValue": null,
+    "emptyObject": {},
+    "emptyArray": [],
+    "mixedArray": [
+      "string",
+      123,
+      true,
+      null,
+      {"key": "value"},
+      ["nested", "array"]
+    ],
+    "deepNesting": {
+      "level1": {
+        "level2": {
+          "level3": {
+            "level4": {
+              "level5": {
+                "value": "deep"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+

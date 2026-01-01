@@ -1,0 +1,17 @@
+**User Profile Settings and Order Statuses**
+
+* **User Profile:**
+	+ Personal Details:
+		- First Name: John
+		- Last Name: Doe
+		- Birth Date: 1990-01-15
+	+ Contact Information:
+		- Email: john@example.com
+		- Phone Number: +1-555-0123
+	+ Settings:
+		- Theme: dark
+		- Notifications: enabled
+		- Language: en
+* **Order Statuses:**
+	+ Order o-001: completed
+	+ Order o-002: pending

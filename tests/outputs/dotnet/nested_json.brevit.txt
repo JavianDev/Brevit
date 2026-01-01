@@ -1,0 +1,30 @@
+@u=user
+@up=user.profile
+@upp=user.profile.personal
+@ups=user.profile.settings
+@upc=user.profile.contact
+@upp.firstName:John
+@upp.lastName:Doe
+@upp.birthDate:1990-01-15
+@upc.email:john@example.com
+@upc.phone:+1-555-0123
+@ups.theme:dark
+@ups.notifications:true
+@ups.language:en
+@u.orders[2]{orderId,status,items}:
+o-001,completed,"[
+  {
+    \"sku\": \"A-1\",
+    \"qty\": 1
+  },
+  {
+    \"sku\": \"B-2\",
+    \"qty\": 2
+  }
+]"
+o-002,pending,"[
+  {
+    \"sku\": \"C-3\",
+    \"qty\": 3
+  }
+]"

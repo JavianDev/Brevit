@@ -1,0 +1,6 @@
+{
+  "name": "basic_json",
+  "type": "json",
+  "inputPath": "tests/shared/inputs/json/basic.json",
+  "intent": "Summarize the key user fields."
+}

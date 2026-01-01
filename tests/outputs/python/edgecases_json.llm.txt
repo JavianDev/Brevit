@@ -1,0 +1,4 @@
+**Evaluation Result**
+
+* **Null/Empty Values:** `mixedArray[0]`, `mixedArray[3]`
+* **Deepest Value:** `deepNesting.level1.level2.level3.level4.level5.value` with value `deep`

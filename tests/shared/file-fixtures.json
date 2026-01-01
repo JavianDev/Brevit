@@ -1,0 +1,67 @@
+{
+  "version": 1,
+  "cases": [
+    {
+      "name": "basic_json",
+      "type": "json",
+      "inputPath": "tests/shared/inputs/json/basic.json",
+      "intent": "Summarize the key user fields."
+    },
+    {
+      "name": "complex_json",
+      "type": "json",
+      "inputPath": "tests/shared/inputs/json/complex.json",
+      "intent": "Extract the hikes and companions."
+    },
+    {
+      "name": "ecommerce_json",
+      "type": "json",
+      "inputPath": "tests/shared/inputs/json/ecommerce.json",
+      "intent": "Compute totals and list items."
+    },
+    {
+      "name": "nested_json",
+      "type": "json",
+      "inputPath": "tests/shared/inputs/json/nested.json",
+      "intent": "List user profile settings and order statuses."
+    },
+    {
+      "name": "edgecases_json",
+      "type": "json",
+      "inputPath": "tests/shared/inputs/json/edgecases.json",
+      "intent": "Identify nulls/empties and deepest value."
+    },
+    {
+      "name": "paragraph_text",
+      "type": "text",
+      "inputPath": "tests/shared/inputs/text/paragraph.txt",
+      "intent": "Summarize the paragraph into 3 bullet points."
+    },
+    {
+      "name": "documentation_text",
+      "type": "text",
+      "inputPath": "tests/shared/inputs/text/documentation.md",
+      "intent": "Extract a short checklist."
+    },
+    {
+      "name": "data_csv_text",
+      "type": "text",
+      "inputPath": "tests/shared/inputs/text/data.csv",
+      "intent": "Compute total revenue by sku."
+    },
+    {
+      "name": "invoice_image",
+      "type": "image",
+      "inputPath": "tests/shared/inputs/images/invoice.png",
+      "intent": "Extract invoice number and total."
+    },
+    {
+      "name": "invoice_pdf",
+      "type": "pdf",
+      "inputPath": "tests/shared/inputs/pdf/invoice.pdf",
+      "intent": "Extract invoice number, date, and total."
+    }
+  ]
+}
+
+

@@ -1,0 +1,6 @@
+{
+  "name": "ecommerce_json",
+  "type": "json",
+  "inputPath": "tests/shared/inputs/json/ecommerce.json",
+  "intent": "Compute totals and list items."
+}

@@ -1,0 +1,4 @@
+**Null/Empty and Deepest Value Identification**
+
+* **Null/Empties:** `nullValue`, `mixedArray[0]` (empty string), `mixedArray[3]`
+* **Deepest Value:** `deepNesting.level1.level2.level3.level4.level5.value = "deep"`

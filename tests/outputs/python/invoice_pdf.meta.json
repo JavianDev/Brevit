@@ -1,0 +1,6 @@
+{
+  "name": "invoice_pdf",
+  "type": "pdf",
+  "inputPath": "tests/shared/inputs/pdf/invoice.pdf",
+  "intent": "Extract invoice number, date, and total."
+}

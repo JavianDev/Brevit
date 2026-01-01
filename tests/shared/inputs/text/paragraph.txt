@@ -1,0 +1,5 @@
+Brevit is a compact, cross-language formatting and optimization layer that turns noisy JSON, text, and documents into a prompt-friendly representation.
+It helps reduce tokens while keeping structure readable, making it easier for an LLM to answer questions reliably.
+In this paragraph, the key points are: compression, readability, and consistent outputs across JavaScript, Python, and .NET.
+
+

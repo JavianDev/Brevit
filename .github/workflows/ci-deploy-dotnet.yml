@@ -1,0 +1,65 @@
+name: .NET CI & Deploy
+
+on:
+  push:
+    branches: [ main, develop ]
+    paths:
+      - 'Brevit.NET/**'
+      - 'Brevit.NET.Tests/**'
+      - '.github/workflows/ci-deploy-dotnet.yml'
+  pull_request:
+    branches: [ main, develop ]
+    paths:
+      - 'Brevit.NET/**'
+      - 'Brevit.NET.Tests/**'
+      - '.github/workflows/ci-deploy-dotnet.yml'
+  release:
+    types: [published]
+  workflow_dispatch:
+
+jobs:
+  build-and-test:
+    name: Build & Test
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '8.0.x'
+
+    - name: Restore dependencies
+      run: |
+        dotnet restore Brevit.NET/Brevit.NET.csproj
+        dotnet restore Brevit.NET.Tests/Brevit.NET.Tests.csproj
+
+    - name: Build
+      run: dotnet build Brevit.NET/Brevit.NET.csproj --no-restore --configuration Release
+
+    - name: Test
+      run: dotnet test Brevit.NET.Tests/Brevit.NET.Tests.csproj --no-build --configuration Release --verbosity normal
+      
+    - name: Pack
+      run: dotnet pack Brevit.NET/Brevit.NET.csproj --configuration Release --no-build --output ./artifacts
+
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: nuget-package
+        path: ./artifacts/*.nupkg
+
+  deploy:
+    name: Deploy to NuGet
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    # Only run this job for releases or manual dispatches
+    if: github.event_name == 'release' || github.event_name == 'workflow_dispatch'
+    steps:
+    - name: Download Artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: nuget-package
+        path: ./artifacts
+    - name: Publish to NuGet
+      run: dotnet nuget push ./artifacts/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate

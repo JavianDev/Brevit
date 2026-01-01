@@ -1,0 +1,6 @@
+{
+  "name": "nested_json",
+  "type": "json",
+  "inputPath": "tests/shared/inputs/json/nested.json",
+  "intent": "List user profile settings and order statuses."
+}

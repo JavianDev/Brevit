@@ -1,0 +1,4 @@
+**Evaluation Result**
+
+* **Nulls/Empties:** `null` at index 3 (`mixedArray[3]` is missing)
+* **Deepest Value:** `value` (at depth level 5, nested under `level1.level2.level3.level4.level5`)

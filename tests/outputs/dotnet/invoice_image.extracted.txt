@@ -1,0 +1,9 @@
+INVOICE
+
+Invoice # INV-1001
+
+Date: 2026.01.01
+
+Customer: Jane Smith
+
+Total $185.94

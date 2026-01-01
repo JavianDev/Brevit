@@ -1,0 +1,6 @@
+{
+  "name": "paragraph_text",
+  "type": "text",
+  "inputPath": "tests/shared/inputs/text/paragraph.txt",
+  "intent": "Summarize the paragraph into 3 bullet points."
+}

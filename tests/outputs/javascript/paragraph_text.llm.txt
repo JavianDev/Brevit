@@ -1,0 +1,9 @@
+**Intent Evaluation Result**
+
+The intent is to summarize the paragraph into 3 bullet points.
+
+**Summary:**
+
+* Brevit optimizes JSON, text, and documents for LLMs.
+* It reduces tokens while maintaining readable structure.
+* Brevit provides consistent outputs across multiple programming languages.

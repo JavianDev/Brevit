@@ -1,0 +1,6 @@
+{
+  "name": "documentation_text",
+  "type": "text",
+  "inputPath": "tests/shared/inputs/text/documentation.md",
+  "intent": "Extract a short checklist."
+}

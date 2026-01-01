@@ -1,0 +1,11 @@
+# Python test requirements
+# Note: brevit package should be installed from local source
+# Run: pip install -e ../../Brevit.py
+
+# Shared preprocess + report deps (tests/shared/preprocess_files.py)
+pypdf==4.0.1
+reportlab==4.0.9
+pillow>=11.0.0
+pytesseract==0.3.10
+
+

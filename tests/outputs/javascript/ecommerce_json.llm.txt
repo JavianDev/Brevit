@@ -1,0 +1,12 @@
+**Evaluation Result**
+
+* **Intent Match:** 100%
+* **Input Validation:** Valid Brevit input format.
+* **Computed Totals:**
+	+ Subtotal: $184.95 (sum of item prices)
+	+ Shipping Cost: $15.99
+	+ Total: $200.94
+* **List Items:**
+	1. A-88, Product A, 2, $29.99
+	2. B-22, Product B, 1, $49.99
+	3. C-33, Product C, 3, $19.99

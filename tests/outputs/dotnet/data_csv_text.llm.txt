@@ -1,0 +1,11 @@
+**Evaluation Result**
+
+The input is valid and can be processed to compute total revenue by SKU.
+
+**Computed Values:**
+
+* A-88: 59.98 (2 x 29.99)
+* B-22: 49.99
+* C-33: 59.97 (3 x 19.99)
+
+**Total Revenue:** 168.94

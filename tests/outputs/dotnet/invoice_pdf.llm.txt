@@ -1,0 +1,5 @@
+Here is the extracted information:
+
+* Invoice Number: INV-2002
+* Date: 2026-01-01
+* Total: $185.94

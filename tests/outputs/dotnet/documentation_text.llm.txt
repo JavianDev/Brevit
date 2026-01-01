@@ -1,0 +1,3 @@
+Intent: Extract a short checklist.
+
+Answer: The purpose is to reduce token usage for LLM prompts, keep data readable, and work across multiple programming languages.

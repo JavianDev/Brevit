@@ -1,0 +1,8 @@
+nullValue:null
+mixedArray[0]:string
+mixedArray[1]:123
+mixedArray[2]:true
+mixedArray[3]:null
+mixedArray[4].key:value
+mixedArray[5][2]:nested,array
+deepNesting.level1.level2.level3.level4.level5.value:deep

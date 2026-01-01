@@ -1,0 +1,17 @@
+**User Profile Settings and Order Statuses:**
+
+* **Name:** John Doe
+* **Birth Date:** 1990-01-15
+* **Email:** john@example.com
+* **Phone:** +1-555-0123
+* **Theme:** dark
+* **Notifications:** true
+* **Language:** en
+
+**Order Statuses:**
+
+* Order ID: o-001, Status: completed, Items:
+	+ SKU: A-1, Quantity: 1
+	+ SKU: B-2, Quantity: 2
+* Order ID: o-002, Status: pending, Items:
+	+ SKU: C-3, Quantity: 3

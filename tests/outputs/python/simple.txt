@@ -1,0 +1,3 @@
+user.name:John Doe
+user.email:john@example.com
+user.age:30

@@ -1,0 +1,10 @@
+[Clean Stub: Summary of text follows...]
+# Brevit - Quick Notes
+
+## Purpose
+- Reduce token usage for LLM prompts
+- Keep data readable
+- Work across JavaScript, Python, and .NET
+
+## Sup...
+[End of summary]

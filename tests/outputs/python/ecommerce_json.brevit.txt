@@ -1,0 +1,19 @@
+@c=customer
+@ca=customer.address
+@s=shipping
+orderId:o-456
+@c.id:c-123
+@c.name:Jane Smith
+@c.email:jane@example.com
+@ca.street:123 Main St
+@ca.city:Toronto
+@ca.province:ON
+@ca.postalCode:M5H 2N2
+items[3]{sku,name,quantity,price}:
+A-88,Product A,2,29.99
+B-22,Product B,1,49.99
+C-33,Product C,3,19.99
+@s.method:express
+@s.cost:15.99
+@s.estimatedDays:2
+total:185.94

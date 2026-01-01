@@ -1,0 +1,46 @@
+{
+  "user": {
+    "profile": {
+      "personal": {
+        "firstName": "John",
+        "lastName": "Doe",
+        "birthDate": "1990-01-15"
+      },
+      "contact": {
+        "email": "john@example.com",
+        "phone": "+1-555-0123"
+      },
+      "settings": {
+        "theme": "dark",
+        "notifications": true,
+        "language": "en"
+      }
+    },
+    "orders": [
+      {
+        "orderId": "o-001",
+        "status": "completed",
+        "items": [
+          {
+            "sku": "A-1",
+            "qty": 1
+          },
+          {
+            "sku": "B-2",
+            "qty": 2
+          }
+        ]
+      },
+      {
+        "orderId": "o-002",
+        "status": "pending",
+        "items": [
+          {
+            "sku": "C-3",
+            "qty": 3
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "nullValue": null,
+  "emptyObject": {},
+  "emptyArray": [],
+  "mixedArray": ["string", 123, true, null, { "key": "value" }, ["nested", "array"]],
+  "deepNesting": {
+    "level1": {
+      "level2": { "level3": { "level4": { "level5": { "value": "deep" } } } }
+    }
+  }
+}
+
+

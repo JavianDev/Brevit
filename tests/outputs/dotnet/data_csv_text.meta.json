@@ -1,0 +1,6 @@
+{
+  "name": "data_csv_text",
+  "type": "text",
+  "inputPath": "tests/shared/inputs/text/data.csv",
+  "intent": "Compute total revenue by sku."
+}

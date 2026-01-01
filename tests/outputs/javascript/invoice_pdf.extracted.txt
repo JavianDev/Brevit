@@ -1,0 +1,5 @@
+INVOICE
+Invoice #: INV-2002
+Date: 2026-01-01
+Customer: Jane Smith
+Total: $185.94
