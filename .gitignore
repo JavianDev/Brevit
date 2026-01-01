@@ -93,3 +93,8 @@ tests/shared/inputs/images/*.webp
 tests/shared/inputs/pdf/*.pdf
 tests/outputs/report.html
 
+# Ignore language implementation folders (user requested)
+Brevit.js/
+Brevit.NET/
+Brevit.py/
+
