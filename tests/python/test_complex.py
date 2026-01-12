@@ -1,9 +1,9 @@
 import asyncio
 import sys
 import os
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../../Brevit.py/src'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../../Brevit.py'))
 
-from brevit import BrevitClient, BrevitConfig, JsonOptimizationMode
+from src.brevit import BrevitClient, BrevitConfig, JsonOptimizationMode
 
 async def test_complex():
     print('=== Complex JSON Structure Tests ===\n')
@@ -89,7 +89,7 @@ async def test_complex():
     print(result3)
     print('\n')
 
-    print('✅ Complex tests completed!')
+    print('OK: Complex tests completed!')
 
 if __name__ == '__main__':
     asyncio.run(test_complex())

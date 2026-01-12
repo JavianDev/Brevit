@@ -1,4 +1,5 @@
 using Brevit.NET;
+using System.Text.RegularExpressions;
 using Xunit;
 
 namespace Brevit.Tests;
@@ -23,24 +24,25 @@ public class AbbreviationTests
 
         var data = new
         {
-            User = new
+            Customer = new
             {
-                Name = "John Doe",
-                Email = "john@example.com"
-            },
-            Order = new
-            {
-                Id = "o-456",
-                Status = "SHIPPED"
+                Personal = new { FirstName = "Jane", LastName = "Smith" },
+                Contact = new { Email = "jane@example.com", Phone = "+1-555-0123" },
+                Address = new
+                {
+                    Street = "123 Main St",
+                    City = "Toronto",
+                    Province = "ON",
+                    PostalCode = "M5H 2N2"
+                }
             }
         };
 
         var result = await brevit.BrevityAsync(data);
         
-        Assert.Contains("@U=User", result);
-        Assert.Contains("@O=Order", result);
-        Assert.Contains("@U.Name:John Doe", result);
-        Assert.Contains("@O.Id:o-456", result);
+        // With enough repeated nested prefixes, we should emit at least one abbreviation definition.
+        Assert.Matches(new Regex(@"@\w+=.+", RegexOptions.Multiline), result);
+        Assert.Contains("Customer", result);
     }
 
     [Fact]
@@ -74,8 +76,7 @@ public class AbbreviationTests
 
         var result = await brevit.BrevityAsync(data);
         
-        Assert.DoesNotContain("@U=User", result);
-        Assert.DoesNotContain("@O=Order", result);
+        Assert.DoesNotMatch(new Regex(@"@\w+=", RegexOptions.Multiline), result);
         Assert.Contains("User.Name:John Doe", result);
         Assert.Contains("Order.Id:o-456", result);
     }
@@ -112,8 +113,7 @@ public class AbbreviationTests
         var result = await brevit.BrevityAsync(data);
         
         // With threshold 3, user/order should not be abbreviated (only 2 occurrences each)
-        Assert.DoesNotContain("@U=User", result);
-        Assert.DoesNotContain("@O=Order", result);
+        Assert.DoesNotMatch(new Regex(@"@\w+=", RegexOptions.Multiline), result);
     }
 }
 

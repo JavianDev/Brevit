@@ -1,9 +1,9 @@
 import asyncio
 import sys
 import os
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../../Brevit.py/src'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../../Brevit.py'))
 
-from brevit import BrevitClient, BrevitConfig, JsonOptimizationMode
+from src.brevit import BrevitClient, BrevitConfig, JsonOptimizationMode
 
 async def test_basic():
     print('=== Basic JSON Flattening Tests ===\n')
@@ -68,7 +68,7 @@ async def test_basic():
     print(result4)
     print('\n')
 
-    print('✅ Basic tests completed!')
+    print('OK: Basic tests completed!')
 
 if __name__ == '__main__':
     asyncio.run(test_basic())
