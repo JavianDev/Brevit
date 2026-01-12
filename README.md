@@ -406,71 +406,348 @@ const config = new BrevitConfig({
 
 ### 2. Text Optimization Examples
 
-Brevit can optimize long text documents, clean boilerplate, and summarize content.
+Brevit provides deterministic TextRank-based text compression that works on any text input, from single sentences to large documents. The compression is **lossless by default** in auto mode, and supports ratio-based compression for more aggressive reduction.
 
-#### Example 2.1: Long Text String
+#### Example 2.1: Auto Mode (Lossless by Default)
+
+Auto mode uses TextRank to analyze sentence importance but keeps all sentences by default (lossless). This is ideal when you want semantic analysis without losing content.
 
 **JavaScript:**
 ```javascript
-const longText = `
-This is a very long document that contains a lot of information.
-It has multiple paragraphs and sections.
-The text goes on for many lines...
-[Repeated content many times]
-`.repeat(50);
+import { BrevitClient, BrevitConfig } from 'brevit';
 
-// Automatic detection: If text exceeds threshold, applies text optimization
-const optimized = await brevit.brevity(longText);
+const brevit = new BrevitClient(new BrevitConfig());
 
-// Explicit text optimization
-const config = new BrevitConfig({ 
-  textMode: TextOptimizationMode.Clean,
-  longTextThreshold: 500  // Characters threshold
-});
-const brevitWithText = new BrevitClient(config);
-const cleaned = await brevitWithText.optimize(longText);
+const document = `
+Artificial intelligence is transforming how we work and live. 
+Machine learning algorithms can now process vast amounts of data. 
+Natural language processing enables computers to understand human language.
+Deep learning models have achieved remarkable breakthroughs in recent years.
+These technologies are reshaping industries across the globe.
+`;
+
+// Method 1: Using brevity() - automatic text compression (lossless)
+const autoCompressed = await brevit.brevity(document);
+// Result: All sentences kept (lossless by default)
+
+// Method 2: Using explicit compressText() - AUTO mode
+const compressed = await brevit.compressText(document);
+// Result: All sentences kept (lossless by default)
 ```
 
 **C#:**
 ```csharp
-string longText = "This is a very long document..." + string.Concat(Enumerable.Repeat("...", 1000));
+using Brevit.NET;
 
-var config = new BrevitConfig(
-    JsonMode: JsonOptimizationMode.None,
-    TextMode: TextOptimizationMode.Clean,
-    LongTextThreshold: 500
+var brevit = new BrevitClient(
+    new BrevitConfig(),
+    new DefaultJsonOptimizer(),
+    new DefaultTextOptimizer(),
+    new DefaultImageOptimizer()
 );
-var brevit = new BrevitClient(config, 
-    new DefaultJsonOptimizer(), 
-    new DefaultTextOptimizer(), 
-    new DefaultImageOptimizer());
 
-// Automatic detection
-var optimized = await brevit.BrevityAsync(longText);
+string document = @"
+Artificial intelligence is transforming how we work and live.
+Machine learning algorithms can now process vast amounts of data.
+Natural language processing enables computers to understand human language.
+Deep learning models have achieved remarkable breakthroughs in recent years.
+These technologies are reshaping industries across the globe.
+";
 
-// Explicit text optimization
-var cleaned = await brevit.OptimizeAsync(longText);
+// Method 1: Using BrevityAsync() - automatic text compression (lossless)
+var autoCompressed = await brevit.BrevityAsync(document);
+// Result: All sentences kept (lossless by default)
+
+// Method 2: Using explicit CompressTextAsync() - AUTO mode
+var compressed = await brevit.CompressTextAsync(document);
+// Result: All sentences kept (lossless by default)
 ```
 
 **Python:**
 ```python
-long_text = "This is a very long document..." * 100
+from brevit import BrevitClient, BrevitConfig
 
-config = BrevitConfig(
-    json_mode=JsonOptimizationMode.None,
-    text_mode=TextOptimizationMode.Clean,
-    long_text_threshold=500
-)
-brevit = BrevitClient(config)
+brevit = BrevitClient(BrevitConfig())
 
-# Automatic detection
-optimized = await brevit.brevity(long_text)
+document = """
+Artificial intelligence is transforming how we work and live.
+Machine learning algorithms can now process vast amounts of data.
+Natural language processing enables computers to understand human language.
+Deep learning models have achieved remarkable breakthroughs in recent years.
+These technologies are reshaping industries across the globe.
+"""
 
-# Explicit text optimization
-cleaned = await brevit.optimize(long_text)
+# Method 1: Using brevity() - automatic text compression (lossless)
+auto_compressed = await brevit.brevity(document)
+# Result: All sentences kept (lossless by default)
+
+# Method 2: Using explicit compress_text() - AUTO mode
+compressed = brevit.compress_text(document)
+# Result: All sentences kept (lossless by default)
 ```
 
-#### Example 2.2: Reading Text from File
+#### Example 2.2: Ratio-Based Compression
+
+Ratio-based compression keeps only the top-ranked sentences by importance. Use this when you need aggressive token reduction.
+
+**JavaScript:**
+```javascript
+const longDocument = `
+The company reported strong quarterly earnings this year.
+Revenue increased by 25% compared to the previous quarter.
+Operating expenses were reduced through strategic cost-cutting measures.
+The board of directors approved a new expansion plan.
+Several new products are scheduled for release next month.
+Customer satisfaction scores reached an all-time high.
+The marketing team launched a successful advertising campaign.
+International sales showed significant growth in Asian markets.
+`;
+
+// Keep 50% of sentences (top-ranked by importance)
+const compressed50 = await brevit.optimizeText(longDocument, 0.5);
+// Result: ~4 sentences kept (top-ranked by TextRank)
+
+// Keep 30% of sentences (more aggressive compression)
+const compressed30 = await brevit.optimizeText(longDocument, 0.3);
+// Result: ~2-3 sentences kept
+
+// Keep 70% of sentences (less aggressive)
+const compressed70 = await brevit.optimizeText(longDocument, 0.7);
+// Result: ~5-6 sentences kept
+
+// Ratio 0.0 or negative = AUTO mode (lossless)
+const autoMode = await brevit.optimizeText(longDocument, 0.0);
+// Result: All sentences kept (same as compressText)
+```
+
+**C#:**
+```csharp
+string longDocument = @"
+The company reported strong quarterly earnings this year.
+Revenue increased by 25% compared to the previous quarter.
+Operating expenses were reduced through strategic cost-cutting measures.
+The board of directors approved a new expansion plan.
+Several new products are scheduled for release next month.
+Customer satisfaction scores reached an all-time high.
+The marketing team launched a successful advertising campaign.
+International sales showed significant growth in Asian markets.
+";
+
+// Keep 50% of sentences (top-ranked by importance)
+var compressed50 = await brevit.OptimizeTextAsync(longDocument, 0.5);
+// Result: ~4 sentences kept (top-ranked by TextRank)
+
+// Keep 30% of sentences (more aggressive compression)
+var compressed30 = await brevit.OptimizeTextAsync(longDocument, 0.3);
+// Result: ~2-3 sentences kept
+
+// Keep 70% of sentences (less aggressive)
+var compressed70 = await brevit.OptimizeTextAsync(longDocument, 0.7);
+// Result: ~5-6 sentences kept
+
+// Ratio 0.0 or negative = AUTO mode (lossless)
+var autoMode = await brevit.OptimizeTextAsync(longDocument, 0.0);
+// Result: All sentences kept (same as CompressTextAsync)
+```
+
+**Python:**
+```python
+long_document = """
+The company reported strong quarterly earnings this year.
+Revenue increased by 25% compared to the previous quarter.
+Operating expenses were reduced through strategic cost-cutting measures.
+The board of directors approved a new expansion plan.
+Several new products are scheduled for release next month.
+Customer satisfaction scores reached an all-time high.
+The marketing team launched a successful advertising campaign.
+International sales showed significant growth in Asian markets.
+"""
+
+# Keep 50% of sentences (top-ranked by importance)
+compressed_50 = brevit.optimize_text(long_document, 0.5)
+# Result: ~4 sentences kept (top-ranked by TextRank)
+
+# Keep 30% of sentences (more aggressive compression)
+compressed_30 = brevit.optimize_text(long_document, 0.3)
+# Result: ~2-3 sentences kept
+
+# Keep 70% of sentences (less aggressive)
+compressed_70 = brevit.optimize_text(long_document, 0.7)
+# Result: ~5-6 sentences kept
+
+# Ratio 0.0 or negative = AUTO mode (lossless)
+auto_mode = brevit.optimize_text(long_document, 0.0)
+# Result: All sentences kept (same as compress_text)
+```
+
+#### Example 2.3: Short Text vs Long Text
+
+Brevit handles both short and long text inputs gracefully.
+
+**JavaScript:**
+```javascript
+// Single sentence - still processed (lossless in auto mode)
+const shortText = "Artificial intelligence is revolutionizing technology.";
+const shortResult = await brevit.compressText(shortText);
+// Result: Same sentence (lossless)
+
+// Multi-paragraph document
+const longText = `
+Paragraph one contains important information about the topic.
+It discusses various aspects and implications.
+The second paragraph provides additional context.
+It explains the background and historical significance.
+Paragraph three presents conclusions and future directions.
+It summarizes key findings and recommendations.
+`.repeat(10);
+
+// Auto mode - lossless
+const autoResult = await brevit.compressText(longText);
+// Result: All sentences kept
+
+// Ratio mode - keep 40% of sentences
+const ratioResult = await brevit.optimizeText(longText, 0.4);
+// Result: Top-ranked sentences kept
+```
+
+**C#:**
+```csharp
+// Single sentence - still processed (lossless in auto mode)
+string shortText = "Artificial intelligence is revolutionizing technology.";
+var shortResult = await brevit.CompressTextAsync(shortText);
+// Result: Same sentence (lossless)
+
+// Multi-paragraph document
+string longText = @"
+Paragraph one contains important information about the topic.
+It discusses various aspects and implications.
+The second paragraph provides additional context.
+It explains the background and historical significance.
+Paragraph three presents conclusions and future directions.
+It summarizes key findings and recommendations.
+" + string.Concat(Enumerable.Repeat("...", 100));
+
+// Auto mode - lossless
+var autoResult = await brevit.CompressTextAsync(longText);
+// Result: All sentences kept
+
+// Ratio mode - keep 40% of sentences
+var ratioResult = await brevit.OptimizeTextAsync(longText, 0.4);
+// Result: Top-ranked sentences kept
+```
+
+**Python:**
+```python
+# Single sentence - still processed (lossless in auto mode)
+short_text = "Artificial intelligence is revolutionizing technology."
+short_result = brevit.compress_text(short_text)
+# Result: Same sentence (lossless)
+
+# Multi-paragraph document
+long_text = """
+Paragraph one contains important information about the topic.
+It discusses various aspects and implications.
+The second paragraph provides additional context.
+It explains the background and historical significance.
+Paragraph three presents conclusions and future directions.
+It summarizes key findings and recommendations.
+""" * 10
+
+# Auto mode - lossless
+auto_result = brevit.compress_text(long_text)
+# Result: All sentences kept
+
+# Ratio mode - keep 40% of sentences
+ratio_result = brevit.optimize_text(long_text, 0.4)
+# Result: Top-ranked sentences kept
+```
+
+#### Example 2.4: Using brevity() vs optimize() vs Explicit APIs
+
+Different methods for text compression offer different levels of control.
+
+**JavaScript:**
+```javascript
+const text = "Your document text here...";
+
+// Method 1: brevity() - Automatic, always uses text compression for plain text
+const result1 = await brevit.brevity(text);
+// Automatically detects text and applies compression (lossless by default)
+
+// Method 2: optimize() - Uses config settings, can be combined with other modes
+const config = new BrevitConfig({
+    jsonMode: JsonOptimizationMode.None,
+    textMode: TextOptimizationMode.Clean
+});
+const brevitConfigured = new BrevitClient(config);
+const result2 = await brevitConfigured.optimize(text);
+// Uses TextOptimizationMode.Clean (which uses TextRank compression)
+
+// Method 3: compressText() - Direct AUTO mode (lossless)
+const result3 = await brevit.compressText(text);
+// Always lossless, keeps all sentences
+
+// Method 4: optimizeText() - Direct ratio-based compression
+const result4 = await brevit.optimizeText(text, 0.5);
+// Keeps 50% of top-ranked sentences
+```
+
+**C#:**
+```csharp
+string text = "Your document text here...";
+
+// Method 1: BrevityAsync() - Automatic, always uses text compression for plain text
+var result1 = await brevit.BrevityAsync(text);
+// Automatically detects text and applies compression (lossless by default)
+
+// Method 2: OptimizeAsync() - Uses config settings
+var config = new BrevitConfig(
+    JsonMode: JsonOptimizationMode.None,
+    TextMode: TextOptimizationMode.Clean
+);
+var brevitConfigured = new BrevitClient(config, 
+    new DefaultJsonOptimizer(), 
+    new DefaultTextOptimizer(), 
+    new DefaultImageOptimizer());
+var result2 = await brevitConfigured.OptimizeAsync(text);
+// Uses TextOptimizationMode.Clean (which uses TextRank compression)
+
+// Method 3: CompressTextAsync() - Direct AUTO mode (lossless)
+var result3 = await brevit.CompressTextAsync(text);
+// Always lossless, keeps all sentences
+
+// Method 4: OptimizeTextAsync() - Direct ratio-based compression
+var result4 = await brevit.OptimizeTextAsync(text, 0.5);
+// Keeps 50% of top-ranked sentences
+```
+
+**Python:**
+```python
+text = "Your document text here..."
+
+# Method 1: brevity() - Automatic, always uses text compression for plain text
+result1 = await brevit.brevity(text)
+# Automatically detects text and applies compression (lossless by default)
+
+# Method 2: optimize() - Uses config settings
+config = BrevitConfig(
+    json_mode=JsonOptimizationMode.None,
+    text_mode=TextOptimizationMode.Clean
+)
+brevit_configured = BrevitClient(config)
+result2 = await brevit_configured.optimize(text)
+# Uses TextOptimizationMode.Clean (which uses TextRank compression)
+
+# Method 3: compress_text() - Direct AUTO mode (lossless)
+result3 = brevit.compress_text(text)
+# Always lossless, keeps all sentences
+
+# Method 4: optimize_text() - Direct ratio-based compression
+result4 = brevit.optimize_text(text, 0.5)
+# Keeps 50% of top-ranked sentences
+```
+
+#### Example 2.5: Reading Text from File
 
 **JavaScript (Node.js):**
 ```javascript
@@ -479,8 +756,14 @@ import fs from 'fs/promises';
 // Read text file
 const textContent = await fs.readFile('document.txt', 'utf-8');
 
-// Optimize the text
-const optimized = await brevit.brevity(textContent);
+// Auto mode - lossless compression
+const autoResult = await brevit.compressText(textContent);
+
+// Ratio-based compression - keep 60% of sentences
+const ratioResult = await brevit.optimizeText(textContent, 0.6);
+
+// Using brevity() - automatic detection
+const brevityResult = await brevit.brevity(textContent);
 ```
 
 **C#:**
@@ -488,8 +771,14 @@ const optimized = await brevit.brevity(textContent);
 // Read text file
 string textContent = await File.ReadAllTextAsync("document.txt");
 
-// Optimize the text
-var optimized = await brevit.BrevityAsync(textContent);
+// Auto mode - lossless compression
+var autoResult = await brevit.CompressTextAsync(textContent);
+
+// Ratio-based compression - keep 60% of sentences
+var ratioResult = await brevit.OptimizeTextAsync(textContent, 0.6);
+
+// Using BrevityAsync() - automatic detection
+var brevityResult = await brevit.BrevityAsync(textContent);
 ```
 
 **Python:**
@@ -498,34 +787,147 @@ var optimized = await brevit.BrevityAsync(textContent);
 with open('document.txt', 'r', encoding='utf-8') as f:
     text_content = f.read()
 
-# Optimize the text
-optimized = await brevit.brevity(text_content)
+# Auto mode - lossless compression
+auto_result = brevit.compress_text(text_content)
+
+# Ratio-based compression - keep 60% of sentences
+ratio_result = brevit.optimize_text(text_content, 0.6)
+
+# Using brevity() - automatic detection
+brevity_result = await brevit.brevity(text_content)
 ```
 
-#### Example 2.3: Text Optimization Modes
+#### Example 2.6: Complete Workflow - Document Processing Pipeline
 
-**Clean Mode (Remove Boilerplate):**
+**JavaScript:**
+```javascript
+import fs from 'fs/promises';
+import { BrevitClient, BrevitConfig } from 'brevit';
+
+const brevit = new BrevitClient(new BrevitConfig());
+
+async function processDocument(filePath, compressionRatio = 0.0) {
+    // Step 1: Read document
+    const rawText = await fs.readFile(filePath, 'utf-8');
+    
+    // Step 2: Compress based on ratio
+    let compressed;
+    if (compressionRatio > 0) {
+        // Aggressive compression for long documents
+        compressed = await brevit.optimizeText(rawText, compressionRatio);
+    } else {
+        // Lossless compression (default)
+        compressed = await brevit.compressText(rawText);
+    }
+    
+    // Step 3: Use in LLM prompt
+    const prompt = `Summarize this document:\n\n${compressed}`;
+    
+    return prompt;
+}
+
+// Usage examples
+const prompt1 = await processDocument('long-report.txt', 0.3);  // Keep 30%
+const prompt2 = await processDocument('article.txt', 0.0);     // Lossless
+```
+
+**C#:**
+```csharp
+using Brevit.NET;
+
+var brevit = new BrevitClient(
+    new BrevitConfig(),
+    new DefaultJsonOptimizer(),
+    new DefaultTextOptimizer(),
+    new DefaultImageOptimizer()
+);
+
+async Task<string> ProcessDocument(string filePath, double compressionRatio = 0.0)
+{
+    // Step 1: Read document
+    string rawText = await File.ReadAllTextAsync(filePath);
+    
+    // Step 2: Compress based on ratio
+    string compressed;
+    if (compressionRatio > 0)
+    {
+        // Aggressive compression for long documents
+        compressed = await brevit.OptimizeTextAsync(rawText, compressionRatio);
+    }
+    else
+    {
+        // Lossless compression (default)
+        compressed = await brevit.CompressTextAsync(rawText);
+    }
+    
+    // Step 3: Use in LLM prompt
+    string prompt = $"Summarize this document:\n\n{compressed}";
+    
+    return prompt;
+}
+
+// Usage examples
+var prompt1 = await ProcessDocument("long-report.txt", 0.3);  // Keep 30%
+var prompt2 = await ProcessDocument("article.txt", 0.0);       // Lossless
+```
+
+**Python:**
+```python
+from brevit import BrevitClient, BrevitConfig
+
+brevit = BrevitClient(BrevitConfig())
+
+async def process_document(file_path, compression_ratio=0.0):
+    # Step 1: Read document
+    with open(file_path, 'r', encoding='utf-8') as f:
+        raw_text = f.read()
+    
+    # Step 2: Compress based on ratio
+    if compression_ratio > 0:
+        # Aggressive compression for long documents
+        compressed = brevit.optimize_text(raw_text, compression_ratio)
+    else:
+        # Lossless compression (default)
+        compressed = brevit.compress_text(raw_text)
+    
+    # Step 3: Use in LLM prompt
+    prompt = f"Summarize this document:\n\n{compressed}"
+    
+    return prompt
+
+# Usage examples
+prompt1 = await process_document('long-report.txt', 0.3)  # Keep 30%
+prompt2 = await process_document('article.txt', 0.0)       # Lossless
+```
+
+#### Example 2.7: Text Optimization Modes Summary
+
+**Clean Mode (Default TextRank Compression):**
 ```javascript
 const config = new BrevitConfig({ 
   textMode: TextOptimizationMode.Clean 
 });
-// Removes signatures, headers, repetitive content
+// Uses deterministic TextRank-based compression
+// - Auto mode: Lossless (keeps all sentences)
+// - Ratio mode: Keeps top-ranked sentences by ratio
 ```
 
-**Summarize Fast:**
+**Summarize Fast (Requires Custom Optimizer):**
 ```javascript
 const config = new BrevitConfig({ 
   textMode: TextOptimizationMode.SummarizeFast 
 });
 // Fast summarization (requires custom text optimizer implementation)
+// Use this with LangChain, OpenAI, or other LLM services
 ```
 
-**Summarize High Quality:**
+**Summarize High Quality (Requires Custom Optimizer):**
 ```javascript
 const config = new BrevitConfig({ 
   textMode: TextOptimizationMode.SummarizeHighQuality 
 });
 // High-quality summarization (requires custom text optimizer with LLM integration)
+// Use this for abstractive summarization via GPT-4, Claude, etc.
 ```
 
 ### 3. Image Optimization Examples
@@ -1277,6 +1679,7 @@ MIT License - see LICENSE file for details.
 - [ ] VS Code extension
 
 ## Version History
+- **1.0.2** (Current): Patch release — performance improvements and bug fixes across JS/.NET/Python.
 - **1.0.1**: Patch release — auto text mode is lossless by default; ratio-based compression supported across JS/.NET/Python.
 - **1.0.0**: Major release — token-efficient JSON flattening + deterministic TextRank-based text processing + robust JSON-vs-text routing.
 
