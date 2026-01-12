@@ -139,11 +139,11 @@ user.contact.phone:+1-555-0123
 The abbreviation feature automatically creates short aliases (`@u=user`, `@o=order`) for frequently repeated prefixes, reducing tokens by an additional 10-25% on top of the base optimization.
 
 ### 2. Text Optimization
-Intelligently process long text documents:
-- **Automatic Detection**: Automatically identifies long text and applies optimization
-- **Boilerplate Removal**: Cleans signatures, headers, and repetitive content
-- **Summarization**: Integrate with LLM services to create concise summaries
-- **Configurable Thresholds**: Set custom thresholds for when to optimize
+Deterministic, extractive TextRank-based processing for plain text:
+- **Lossless by Default**: Auto mode keeps all sentences unless you explicitly request compression.
+- **Ratio Compression**: Pass a ratio \(0 < r < 1\) to keep the top-ranked fraction of sentences.
+- **Always Attempted**: Text processing is attempted even for short or single-sentence inputs.
+- **No LLM Required**: Deterministic extractive pipeline (for abstractive summarization, plug in your own optimizer).
 
 ### 3. Image Optimization
 Extract and optimize content from images:
@@ -1277,8 +1277,8 @@ MIT License - see LICENSE file for details.
 - [ ] VS Code extension
 
 ## Version History
-- **0.1.1**: Minor bug fixes and documentation updates.
-- **0.1.0**: Initial release with core optimization features.
+- **1.0.1**: Patch release — auto text mode is lossless by default; ratio-based compression supported across JS/.NET/Python.
+- **1.0.0**: Major release — token-efficient JSON flattening + deterministic TextRank-based text processing + robust JSON-vs-text routing.
 
 ---
 

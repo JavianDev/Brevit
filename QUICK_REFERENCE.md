@@ -7,9 +7,9 @@ This document provides quick access to all published packages, repositories, and
 ### Brevit.js (JavaScript/TypeScript)
 
 - **Package Name**: `brevit`
-- **Current Version**: `0.1.5`
+- **Current Version**: `1.0.1`
 - **npm Registry**: https://www.npmjs.com/package/brevit
-- **Package Page**: https://www.npmjs.com/package/brevit/v/0.1.5
+- **Package Page**: https://www.npmjs.com/package/brevit/v/1.0.1
 - **Installation**: 
   ```bash
   npm install brevit
@@ -20,9 +20,9 @@ This document provides quick access to all published packages, repositories, and
 ### Brevit.py (Python)
 
 - **Package Name**: `brevit`
-- **Current Version**: `0.1.5`
+- **Current Version**: `1.0.1`
 - **PyPI Registry**: https://pypi.org/project/brevit/
-- **Package Page**: https://pypi.org/project/brevit/0.1.5/
+- **Package Page**: https://pypi.org/project/brevit/1.0.1/
 - **Installation**: 
   ```bash
   pip install brevit
@@ -33,9 +33,9 @@ This document provides quick access to all published packages, repositories, and
 ### Brevit.NET (C# / .NET)
 
 - **Package Name**: `Brevit`
-- **Current Version**: `0.1.5`
+- **Current Version**: `1.0.1`
 - **NuGet Registry**: https://www.nuget.org/packages/Brevit
-- **Package Page**: https://www.nuget.org/packages/Brevit/0.1.5
+- **Package Page**: https://www.nuget.org/packages/Brevit/1.0.1
 - **Installation**: 
   ```bash
   dotnet add package Brevit
@@ -104,19 +104,19 @@ dotnet add package Brevit
 
 ### npm (Brevit.js)
 - **Total Downloads**: Check at https://www.npmjs.com/package/brevit
-- **Latest Version**: 0.1.5
+- **Latest Version**: 1.0.1
 - **License**: MIT
 - **Maintainer**: javiandev
 
 ### PyPI (Brevit.py)
 - **Total Downloads**: Check at https://pypi.org/project/brevit/
-- **Latest Version**: 0.1.5
+- **Latest Version**: 1.0.1
 - **License**: MIT
 - **Author**: JavianDev
 
 ### NuGet (Brevit.NET)
 - **Total Downloads**: Check at https://www.nuget.org/packages/Brevit
-- **Latest Version**: 0.1.5
+- **Latest Version**: 1.0.1
 - **License**: MIT
 - **Author**: JavianDev
 
@@ -125,21 +125,21 @@ dotnet add package Brevit
 ### To Publish Updates:
 
 1. **Update Version** in respective config files:
-   - `Brevit.js/package.json` → `"version": "0.1.x"`
-   - `Brevit.py/pyproject.toml` → `version = "0.1.x"`
-   - `Brevit.NET/Brevit.NET.csproj` → `<Version>0.1.x</Version>`
+   - `Brevit.js/package.json` → `"version": "1.0.x"`
+   - `Brevit.py/pyproject.toml` → `version = "1.0.x"`
+   - `Brevit.NET/Brevit.NET.csproj` → `<Version>1.0.x</Version>`
 
 2. **Commit and Push** to GitHub:
    ```bash
    git add .
-   git commit -m "Update version to 0.1.x"
+   git commit -m "Release 1.0.x"
    git push
    ```
 
 3. **Publish Packages**:
    - **npm**: `cd Brevit.js && npm publish --access public`
-   - **PyPI**: `cd Brevit.py && python -m build && python -m twine upload dist/brevit-0.1.x*`
-   - **NuGet**: `cd Brevit.NET && dotnet pack -c Release && dotnet nuget push bin/Release/Brevit.0.1.x.nupkg --api-key <KEY> --source https://api.nuget.org/v3/index.json`
+   - **PyPI**: `cd Brevit.py && python -m build && python -m twine upload dist/brevit-1.0.x*`
+   - **NuGet**: `cd Brevit.NET && dotnet pack -c Release && dotnet nuget push bin/Release/Brevit.1.0.x.nupkg --api-key <NUGET_API_KEY> --source https://api.nuget.org/v3/index.json`
 
 ## 🔐 Authentication Tokens
 
@@ -150,15 +150,13 @@ dotnet add package Brevit
 - Token: Use `TWINE_USERNAME=__token__` and `TWINE_PASSWORD=<token>`
 
 ### NuGet
-- API Key: `oy2otmmhbn5jqzydngya5c4erkqcycqutivbcalpqranky`
+- API Key: **DO NOT store secrets in this repo**. Use `dotnet nuget setapikey <KEY> --source https://api.nuget.org/v3/index.json` or a secure CI secret store.
 
 ## 📝 Version History
 
-- **0.1.5** - Updated all documentation examples to show abbreviations enabled by default, removed examples without abbreviations, fixed package name consistency
-- **0.1.4** - Updated README titles to use package names (brevit/Brevit) instead of folder names, fixed documentation consistency
-- **0.1.3** - Added abbreviation feature, updated README documentation with abbreviation examples
-- **0.1.2** - Initial release with abbreviation feature
-- **0.1.1** - Initial release
+- **1.0.1** - Patch release: deterministic TextRank pipeline improvements; **auto mode is lossless by default**; ratio-based compression available via `optimizeText(..., ratio)` APIs.
+- **1.0.0** - Major release: deterministic TextRank-based text processing + robust input routing (JSON vs plain text); new explicit text APIs across JS/.NET/Python.
+- **0.1.5** - Legacy pre-1.0 releases
 
 ## 📧 Contact & Support
 
@@ -171,6 +169,6 @@ dotnet add package Brevit
 
 ---
 
-*Last Updated: 2026-01-01*
-*All packages maintained at version 0.1.5*
+*Last Updated: 2026-01-12*
+*All packages maintained at version 1.0.1*
 
