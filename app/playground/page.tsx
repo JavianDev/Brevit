@@ -3,21 +3,17 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 import dynamic from "next/dynamic";
 import Script from "next/script";
-import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Play, Copy, Check, ChevronDown, Zap, Bot, Share2,
-  Info, Loader2, RotateCcw, FileText, FileJson, FlaskConical, SlidersHorizontal, X
+  Info, Loader2, RotateCcw, FileText, FileJson, FlaskConical, SlidersHorizontal, Tag,
 } from "lucide-react";
 import { Navbar } from "@/components/Navbar";
 import { BrevitClient, BrevitConfig, JsonOptimizationMode } from "@/lib/brevit-browser";
-import { estimateTokens } from "@/lib/utils";
 import { puterChat, isPuterAvailable, PUTER_MODELS, type PuterModel } from "@/lib/puter";
 
-// Dynamic import of Monaco Editor (SSR-unsafe)
 const MonacoEditor = dynamic(() => import("@monaco-editor/react"), { ssr: false });
 
-// ── Sample data ───────────────────────────────────────────────────────────────
 const SAMPLES: Record<string, { label: string; content: string; type: "json" | "text" }> = {
   ecommerce: {
     label: "E-Commerce Order",
@@ -77,17 +73,6 @@ const SAMPLES: Record<string, { label: string; content: string; type: "json" | "
   }
 }`,
   },
-  articleText: {
-    label: "Article Text",
-    type: "text",
-    content: `Artificial intelligence has transformed the way we interact with software. Large language models, or LLMs, can understand and generate human-like text with remarkable accuracy. However, using these models comes with significant costs that scale directly with the number of tokens processed.
-
-Token optimization is the practice of reducing the number of tokens sent to an LLM without losing the essential information needed for the model to respond accurately. This can involve compressing JSON structures, removing redundant whitespace, or summarizing long text passages.
-
-Brevit implements a suite of optimization techniques including dot-notation JSON flattening, tabular array compression, TextRank-based text summarization, and an intelligent abbreviation engine. Together, these techniques typically reduce token counts by 40 to 60 percent on real-world data.
-
-The cost savings can be substantial. An application that processes one million LLM API calls per month at 100 tokens per call spends around two hundred dollars monthly at standard rates. With Brevit reducing the token count by 50 percent, that cost drops to one hundred dollars — saving twelve hundred dollars annually from a single line of code change.`,
-  },
   hikeTrails: {
     label: "Hike Trails",
     type: "json",
@@ -103,41 +88,100 @@ The cost savings can be substantial. An application that processes one million L
   "meta": { "lastUpdated": "2024-01-15", "source": "TrailDB v2" }
 }`,
   },
+  articleText: {
+    label: "Article Text",
+    type: "text",
+    content: `Artificial intelligence has transformed the way we interact with software. Large language models, or LLMs, can understand and generate human-like text with remarkable accuracy. However, using these models comes with significant costs that scale directly with the number of tokens processed.
+
+Token optimization is the practice of reducing the number of tokens sent to an LLM without losing the essential information needed for the model to respond accurately. This can involve compressing JSON structures, removing redundant whitespace, or summarizing long text passages.
+
+Brevit implements a suite of optimization techniques including dot-notation JSON flattening, tabular array compression, TextRank-based text summarization, and an intelligent abbreviation engine. Together, these techniques typically reduce token counts by 40 to 60 percent on real-world data.
+
+The cost savings can be substantial. An application that processes one million LLM API calls per month at 100 tokens per call spends around two hundred dollars monthly at standard rates. With Brevit reducing the token count by 50 percent, that cost drops to one hundred dollars — saving twelve hundred dollars annually from a single line of code change.`,
+  },
+  researchPaper: {
+    label: "AI Research Paper",
+    type: "text",
+    content: `Transformer architectures have fundamentally changed the landscape of natural language processing since the publication of Attention Is All You Need in 2017. The self-attention mechanism allows models to weigh the importance of different tokens in a sequence relative to each other, enabling parallel processing of input data.
+
+Pre-training on large corpora followed by task-specific fine-tuning has become the dominant paradigm. Models like BERT demonstrated that bidirectional context understanding significantly improves performance on downstream tasks including question answering, sentiment analysis, and named entity recognition.
+
+Scaling laws have shown that model performance improves predictably with increases in model size, dataset size, and compute budget. This has driven the development of increasingly large models, from GPT-2 with 1.5 billion parameters to GPT-4 with an estimated trillion or more parameters.
+
+However, the computational cost of training and inference scales quadratically with sequence length due to the attention mechanism. Various approaches have been proposed to address this limitation, including sparse attention patterns, linear attention mechanisms, and sliding window approaches.
+
+Recent research has focused on making large language models more efficient through techniques such as quantization, pruning, knowledge distillation, and mixture-of-experts architectures. These methods aim to reduce the computational requirements while maintaining model quality.
+
+The emergence of instruction tuning and reinforcement learning from human feedback has improved the alignment of large language models with human preferences, making them more useful and safer for deployment in real-world applications.`,
+  },
+  legalContract: {
+    label: "Legal Contract",
+    type: "text",
+    content: `This Software License Agreement ("Agreement") is entered into as of the date of acceptance by and between the Licensor, hereinafter referred to as "Company," and the end user, hereinafter referred to as "Licensee."
+
+WHEREAS, the Company has developed certain proprietary software and related documentation; and WHEREAS, the Licensee desires to obtain a license to use such software subject to the terms and conditions set forth herein.
+
+NOW, THEREFORE, in consideration of the mutual covenants and agreements contained herein, and for other good and valuable consideration, the receipt and sufficiency of which are hereby acknowledged, the parties agree as follows:
+
+Grant of License. Subject to the terms of this Agreement, the Company hereby grants to the Licensee a non-exclusive, non-transferable, revocable license to use the software solely for the Licensee's internal business purposes. The Licensee shall not sublicense, distribute, or otherwise make the software available to any third party without prior written consent.
+
+Intellectual Property. All intellectual property rights in and to the software, including but not limited to copyrights, patents, trade secrets, and trademarks, shall remain the exclusive property of the Company. The Licensee acknowledges that the software contains trade secrets and proprietary information.
+
+Limitation of Liability. In no event shall the Company be liable for any indirect, incidental, special, consequential, or punitive damages arising out of or related to the use of the software, regardless of whether such damages were foreseeable.`,
+  },
+  supportTicket: {
+    label: "Support Ticket",
+    type: "text",
+    content: `Customer reported that the dashboard loading time has increased significantly over the past week. Average page load went from 2 seconds to over 8 seconds. The issue appears to affect all users in the organization.
+
+Steps to reproduce: Log into the application, navigate to the main dashboard page, and observe the loading spinner. The analytics widgets take the longest to render.
+
+Investigation revealed that a recent database migration added several unindexed columns that are being queried in the dashboard aggregation pipeline. The query execution plan shows full table scans on the events table which contains over 50 million rows.
+
+Recommended fix: Add composite indexes on the created_at and event_type columns, and implement query result caching with a 5-minute TTL for dashboard aggregations.`,
+  },
 };
 
-const TAB_LABELS = ["brevit", "yaml", "json"];
+type JsonMode = "flatten" | "yaml" | "raw" | "filter";
 
-// ── Token counting (accurate whitespace estimator) ────────────────────────────
 function countTokens(text: string): number {
   if (!text) return 0;
-  // Split on common token boundaries: whitespace, punctuation, special chars
-  const tokens = text
-    .replace(/\s+/g, " ")
-    .trim()
-    .split(/[\s{}[\]:,\n"'=@.]+/)
-    .filter(Boolean);
-  // Each punctuation character is roughly its own token
+  const tokens = text.replace(/\s+/g, " ").trim().split(/[\s{}[\]:,\n"'=@.]+/).filter(Boolean);
   const punctCount = (text.match(/[{}[\]:,\n"'=@.]/g) || []).length;
   return Math.max(1, Math.round(tokens.length * 0.75 + punctCount * 0.5));
 }
 
-// ── Main component ────────────────────────────────────────────────────────────
+function extractAbbreviations(output: string): Record<string, string> {
+  const map: Record<string, string> = {};
+  const lines = output.split("\n");
+  for (const line of lines) {
+    const match = line.match(/^@(\w+)=(.+)$/);
+    if (match) map[match[1]] = match[2];
+  }
+  return map;
+}
+
+function countSentences(text: string): number {
+  return (text.match(/[^.!?]+[.!?]+/g) || [text]).length;
+}
 
 export default function PlaygroundPage() {
   const [input, setInput] = useState(SAMPLES.ecommerce.content);
   const [inputType, setInputType] = useState<"json" | "text">("json");
-  const [mode, setMode] = useState<"brevity" | "optimize" | "text">("brevity");
   const [ratio, setRatio] = useState(0.5);
+  const [textMode, setTextMode] = useState<"auto" | "ratio">("ratio");
   const [enableAbbrevs, setEnableAbbrevs] = useState(true);
   const [abbrevThreshold, setAbbrevThreshold] = useState(2);
+  const [jsonMode, setJsonMode] = useState<JsonMode>("flatten");
+  const [filterPath, setFilterPath] = useState("");
 
   const [brevitOutput, setBrevitOutput] = useState("");
   const [yamlOutput, setYamlOutput] = useState("");
   const [jsonOutput, setJsonOutput] = useState("");
   const [activeOutTab, setActiveOutTab] = useState("brevit");
   const [hasRun, setHasRun] = useState(false);
+  const [abbreviationMap, setAbbreviationMap] = useState<Record<string, string>>({});
 
-  // LLM panel
   const [llmModel, setLlmModel] = useState<PuterModel>("gpt-4o-mini");
   const [llmPrompt, setLlmPrompt] = useState("Summarize the content and list 3 key takeaways.");
   const [originalResponse, setOriginalResponse] = useState("");
@@ -147,10 +191,7 @@ export default function PlaygroundPage() {
   const [llmPanelOpen, setLlmPanelOpen] = useState(false);
   const [puterLoaded, setPuterLoaded] = useState(false);
 
-  // Copied state
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
-
-  // Config panel
   const [configOpen, setConfigOpen] = useState(false);
 
   function copyText(text: string, key: string) {
@@ -160,10 +201,17 @@ export default function PlaygroundPage() {
   }
 
   const runBrevit = useCallback(() => {
+    const modeMap: Record<string, string> = {
+      flatten: JsonOptimizationMode.Flatten,
+      yaml: JsonOptimizationMode.ToYaml,
+      raw: JsonOptimizationMode.None,
+      filter: JsonOptimizationMode.Flatten,
+    };
+
     const config = new BrevitConfig({
       enableAbbreviations: enableAbbrevs,
       abbreviationThreshold: abbrevThreshold,
-      jsonMode: JsonOptimizationMode.Flatten,
+      jsonMode: (modeMap[jsonMode] ?? JsonOptimizationMode.Flatten) as typeof JsonOptimizationMode[keyof typeof JsonOptimizationMode],
     });
     const client = new BrevitClient(config);
 
@@ -172,12 +220,11 @@ export default function PlaygroundPage() {
     let jOut = "";
 
     try {
-      if (mode === "brevity") {
-        bOut = client.brevity(input);
-      } else if (mode === "optimize") {
-        bOut = client.optimize(input);
+      if (inputType === "text") {
+        const effectiveRatio = textMode === "auto" ? undefined : ratio;
+        bOut = client.optimizeText(input, effectiveRatio ?? 0.4);
       } else {
-        bOut = client.optimizeText(input, ratio);
+        bOut = client.brevity(input);
       }
     } catch (e) {
       bOut = `Error: ${String(e)}`;
@@ -205,25 +252,23 @@ export default function PlaygroundPage() {
     setBrevitOutput(bOut);
     setYamlOutput(yOut);
     setJsonOutput(jOut);
+    setAbbreviationMap(extractAbbreviations(bOut));
     setHasRun(true);
-  }, [input, mode, ratio, enableAbbrevs, abbrevThreshold]);
+  }, [input, inputType, textMode, ratio, enableAbbrevs, abbrevThreshold, jsonMode]);
 
-  // Run on mount
   useEffect(() => { runBrevit(); }, []);
 
-  // Auto-run on input/config change (debounced)
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   useEffect(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current);
     debounceRef.current = setTimeout(() => { runBrevit(); }, 400);
     return () => { if (debounceRef.current) clearTimeout(debounceRef.current); };
-  }, [input, mode, ratio, enableAbbrevs, abbrevThreshold, runBrevit]);
+  }, [input, inputType, textMode, ratio, enableAbbrevs, abbrevThreshold, jsonMode, runBrevit]);
 
-  // Share URL
   function shareUrl() {
     const params = new URLSearchParams({
       input: encodeURIComponent(input),
-      mode,
+      type: inputType,
       ratio: String(ratio),
     });
     const url = `${window.location.origin}/playground?${params.toString()}`;
@@ -232,19 +277,17 @@ export default function PlaygroundPage() {
     setTimeout(() => setCopiedKey(null), 2000);
   }
 
-  // Load URL state on mount
   useEffect(() => {
     if (typeof window === "undefined") return;
     const params = new URLSearchParams(window.location.search);
     const inp = params.get("input");
     if (inp) { try { setInput(decodeURIComponent(inp)); } catch { /* ignore */ } }
-    const m = params.get("mode") as typeof mode;
-    if (m) setMode(m);
+    const t = params.get("type") as "json" | "text";
+    if (t) setInputType(t);
     const r = params.get("ratio");
     if (r) setRatio(Number(r));
   }, []);
 
-  // Run LLM comparison
   async function runLlmComparison() {
     if (!isPuterAvailable()) {
       setLlmError("Puter.js is still loading. Please wait a moment and try again.");
@@ -274,11 +317,17 @@ export default function PlaygroundPage() {
   const tokensYaml = countTokens(yamlOutput);
   const savingPct = tokensBefore > 0 ? Math.round(((tokensBefore - tokensAfter) / tokensBefore) * 100) : 0;
 
+  const sentencesBefore = inputType === "text" ? countSentences(input) : 0;
+  const sentencesAfter = inputType === "text" ? countSentences(brevitOutput) : 0;
+
+  const TAB_LABELS = ["brevit", "yaml", "json"];
   const outputs: Record<string, { label: string; content: string; tokens: number }> = {
     brevit: { label: "Brevit", content: brevitOutput, tokens: tokensBrevit },
     yaml: { label: "YAML", content: yamlOutput, tokens: tokensYaml },
     json: { label: "JSON", content: jsonOutput, tokens: tokensBefore },
   };
+
+  const abbrevEntries = Object.entries(abbreviationMap);
 
   return (
     <>
@@ -289,14 +338,14 @@ export default function PlaygroundPage() {
         {/* Header */}
         <div
           className="border-b px-5 py-4"
-          style={{ borderColor: "var(--border)", background: "rgba(0,0,0,0.6)" }}
+          style={{ borderColor: "var(--border)", background: "var(--bg-surface)" }}
         >
-          <div className="max-w-[1400px] mx-auto flex items-center justify-between gap-4">
+          <div className="max-w-[1400px] mx-auto flex items-center justify-between gap-4 flex-wrap">
             <div>
               <div className="flex items-center gap-2">
                 <FlaskConical size={16} style={{ color: "var(--accent)" }} />
                 <h1 className="text-base font-semibold">Playground</h1>
-                <span className="text-xs px-2 py-0.5 rounded-full font-mono" style={{ background: "rgba(126,248,216,0.08)", color: "var(--accent)", border: "1px solid rgba(126,248,216,0.15)" }}>
+                <span className="text-xs px-2 py-0.5 rounded-full font-mono" style={{ background: "var(--accent-dim)", color: "var(--accent)", border: "1px solid var(--accent)" }}>
                   Brevit v1.0.2
                 </span>
               </div>
@@ -305,26 +354,30 @@ export default function PlaygroundPage() {
               </p>
             </div>
             <div className="flex items-center gap-2">
-              {/* Sample selector */}
               <select
                 onChange={(e) => {
                   const s = SAMPLES[e.target.value];
                   if (s) { setInput(s.content); setInputType(s.type); }
                 }}
                 className="text-xs px-3 py-1.5 rounded-lg outline-none cursor-pointer"
-                style={{ background: "rgba(255,255,255,0.05)", border: "1px solid var(--border)", color: "var(--text-secondary)" }}
+                style={{ background: "var(--hover-bg)", border: "1px solid var(--border)", color: "var(--text-secondary)" }}
               >
                 <option value="">Load sample…</option>
-                {Object.entries(SAMPLES).map(([key, s]) => (
-                  <option key={key} value={key}>{s.label}</option>
-                ))}
+                <optgroup label="JSON">
+                  {Object.entries(SAMPLES).filter(([, s]) => s.type === "json").map(([key, s]) => (
+                    <option key={key} value={key}>{s.label}</option>
+                  ))}
+                </optgroup>
+                <optgroup label="Text">
+                  {Object.entries(SAMPLES).filter(([, s]) => s.type === "text").map(([key, s]) => (
+                    <option key={key} value={key}>{s.label}</option>
+                  ))}
+                </optgroup>
               </select>
               <button
                 onClick={shareUrl}
                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all"
-                style={{ background: "rgba(255,255,255,0.05)", border: "1px solid var(--border)", color: "var(--text-muted)" }}
-                onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "var(--text-primary)"; }}
-                onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "var(--text-muted)"; }}
+                style={{ background: "var(--hover-bg)", border: "1px solid var(--border)", color: "var(--text-muted)" }}
               >
                 {copiedKey === "share" ? <Check size={12} style={{ color: "var(--success)" }} /> : <Share2 size={12} />}
                 Share
@@ -337,59 +390,98 @@ export default function PlaygroundPage() {
           {/* Top controls */}
           <div
             className="flex flex-wrap items-center gap-3 mb-5 p-3 rounded-xl"
-            style={{ background: "rgba(255,255,255,0.02)", border: "1px solid var(--border)" }}
+            style={{ background: "var(--bg-surface)", border: "1px solid var(--border)" }}
           >
-            {/* Mode */}
+            {/* Input type tabs */}
             <div className="flex items-center gap-1">
-              <span className="text-xs mr-1" style={{ color: "var(--text-muted)" }}>Mode:</span>
-              {([["brevity", "brevity()"], ["optimize", "optimize()"], ["text", "optimizeText()"]] as const).map(([id, label]) => (
+              <span className="text-xs mr-1" style={{ color: "var(--text-muted)" }}>Input:</span>
+              {([["json", "JSON", FileJson], ["text", "Text", FileText]] as const).map(([id, label, Icon]) => (
                 <button
                   key={id}
-                  onClick={() => setMode(id)}
-                  className="text-xs px-2.5 py-1.5 rounded-lg font-mono transition-all"
+                  onClick={() => setInputType(id as "json" | "text")}
+                  className="flex items-center gap-1.5 text-xs px-2.5 py-1.5 rounded-lg font-medium transition-all"
                   style={{
-                    background: mode === id ? "rgba(126,248,216,0.1)" : "transparent",
-                    color: mode === id ? "var(--accent)" : "var(--text-muted)",
-                    border: mode === id ? "1px solid rgba(126,248,216,0.2)" : "1px solid transparent",
+                    background: inputType === id ? "var(--accent-dim)" : "transparent",
+                    color: inputType === id ? "var(--accent)" : "var(--text-muted)",
+                    border: inputType === id ? "1px solid var(--accent)" : "1px solid transparent",
                   }}
                 >
+                  <Icon size={12} />
                   {label}
                 </button>
               ))}
             </div>
 
-            {/* Ratio slider (only in text mode) */}
-            <AnimatePresence>
-              {mode === "text" && (
-                <motion.div
-                  initial={{ opacity: 0, width: 0 }}
-                  animate={{ opacity: 1, width: "auto" }}
-                  exit={{ opacity: 0, width: 0 }}
-                  className="flex items-center gap-2 overflow-hidden"
-                >
-                  <span className="text-xs whitespace-nowrap" style={{ color: "var(--text-muted)" }}>Ratio:</span>
-                  <input
-                    type="range"
-                    min={0.1} max={1.0} step={0.1}
-                    value={ratio}
-                    onChange={(e) => setRatio(Number(e.target.value))}
-                    className="w-20 h-1.5 rounded-full appearance-none cursor-pointer"
+            <div className="w-px h-5" style={{ background: "var(--border)" }} />
+
+            {/* JSON mode selector */}
+            {inputType === "json" && (
+              <div className="flex items-center gap-1">
+                <span className="text-xs mr-1" style={{ color: "var(--text-muted)" }}>JSON Mode:</span>
+                {(["flatten", "yaml", "raw"] as const).map((m) => (
+                  <button
+                    key={m}
+                    onClick={() => setJsonMode(m)}
+                    className="text-xs px-2.5 py-1.5 rounded-lg font-mono transition-all capitalize"
                     style={{
-                      background: `linear-gradient(to right, var(--accent) ${ratio * 100}%, rgba(255,255,255,0.1) ${ratio * 100}%)`,
-                      WebkitAppearance: "none",
+                      background: jsonMode === m ? "var(--accent-dim)" : "transparent",
+                      color: jsonMode === m ? "var(--accent)" : "var(--text-muted)",
+                      border: jsonMode === m ? "1px solid var(--accent)" : "1px solid transparent",
                     }}
-                  />
-                  <span className="text-xs font-mono w-8" style={{ color: "var(--accent)" }}>{ratio.toFixed(1)}</span>
-                </motion.div>
-              )}
-            </AnimatePresence>
+                  >
+                    {m}
+                  </button>
+                ))}
+              </div>
+            )}
+
+            {/* Text mode controls */}
+            {inputType === "text" && (
+              <div className="flex items-center gap-3 flex-wrap">
+                <div className="flex items-center gap-1">
+                  <span className="text-xs mr-1" style={{ color: "var(--text-muted)" }}>Text Mode:</span>
+                  {(["auto", "ratio"] as const).map((m) => (
+                    <button
+                      key={m}
+                      onClick={() => setTextMode(m)}
+                      className="text-xs px-2.5 py-1.5 rounded-lg font-mono transition-all uppercase"
+                      style={{
+                        background: textMode === m ? "var(--accent-dim)" : "transparent",
+                        color: textMode === m ? "var(--accent)" : "var(--text-muted)",
+                        border: textMode === m ? "1px solid var(--accent)" : "1px solid transparent",
+                      }}
+                    >
+                      {m}
+                    </button>
+                  ))}
+                </div>
+
+                {textMode === "ratio" && (
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs" style={{ color: "var(--text-muted)" }}>Ratio:</span>
+                    <input
+                      type="range"
+                      min={0.1} max={1.0} step={0.05}
+                      value={ratio}
+                      onChange={(e) => setRatio(Number(e.target.value))}
+                      className="w-28 h-1.5 rounded-full appearance-none cursor-pointer"
+                      style={{
+                        background: `linear-gradient(to right, var(--accent) ${ratio * 100}%, var(--border) ${ratio * 100}%)`,
+                        WebkitAppearance: "none",
+                      }}
+                    />
+                    <span className="text-xs font-mono w-10" style={{ color: "var(--accent)" }}>{(ratio * 100).toFixed(0)}%</span>
+                  </div>
+                )}
+              </div>
+            )}
 
             {/* Config button */}
             <button
               onClick={() => setConfigOpen(!configOpen)}
               className="flex items-center gap-1.5 text-xs px-2.5 py-1.5 rounded-lg transition-all ml-auto"
               style={{
-                background: configOpen ? "rgba(126,248,216,0.08)" : "transparent",
+                background: configOpen ? "var(--accent-dim)" : "transparent",
                 color: configOpen ? "var(--accent)" : "var(--text-muted)",
                 border: "1px solid transparent",
               }}
@@ -399,7 +491,7 @@ export default function PlaygroundPage() {
             </button>
           </div>
 
-          {/* Config panel (collapsible) */}
+          {/* Config panel */}
           <AnimatePresence>
             {configOpen && (
               <motion.div
@@ -410,7 +502,7 @@ export default function PlaygroundPage() {
               >
                 <div
                   className="p-4 rounded-xl"
-                  style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(126,248,216,0.12)" }}
+                  style={{ background: "var(--bg-surface)", border: "1px solid var(--accent)" }}
                 >
                   <div className="flex flex-wrap gap-6">
                     <label className="flex items-center gap-2 text-sm cursor-pointer">
@@ -432,7 +524,7 @@ export default function PlaygroundPage() {
                           value={abbrevThreshold}
                           onChange={(e) => setAbbrevThreshold(Number(e.target.value))}
                           className="w-16 px-2 py-1 rounded-md text-sm font-mono text-center outline-none"
-                          style={{ background: "rgba(255,255,255,0.05)", border: "1px solid var(--border)", color: "var(--accent)" }}
+                          style={{ background: "var(--bg-code)", border: "1px solid var(--border)", color: "var(--accent)" }}
                         />
                       </div>
                     )}
@@ -451,35 +543,33 @@ export default function PlaygroundPage() {
             >
               <div
                 className="flex items-center justify-between px-4 py-2.5 border-b flex-shrink-0"
-                style={{ borderColor: "rgba(255,255,255,0.06)", background: "rgba(255,255,255,0.02)" }}
+                style={{ borderColor: "var(--border)", background: "var(--bg-card)" }}
               >
                 <div className="flex items-center gap-2">
-                  {/* Traffic lights */}
                   <div className="flex gap-1.5">
-                    {["#f87171", "#fb923c", "#4ade80"].map((c) => (
+                    {["var(--danger)", "var(--warning)", "var(--success)"].map((c) => (
                       <div key={c} className="w-2.5 h-2.5 rounded-full" style={{ background: c, opacity: 0.4 }} />
                     ))}
                   </div>
-                  <span className="text-xs font-mono ml-2" style={{ color: "var(--text-muted)" }}>Input</span>
+                  <span className="text-xs font-mono ml-2" style={{ color: "var(--text-muted)" }}>
+                    {inputType === "json" ? "Input (JSON)" : "Input (Text)"}
+                  </span>
                   <span
                     className="text-xs px-2 py-0.5 rounded-full font-mono"
-                    style={{ background: "rgba(255,255,255,0.05)", color: "var(--text-muted)" }}
+                    style={{ background: "var(--hover-bg)", color: "var(--text-muted)" }}
                   >
                     ~{tokensBefore} tokens
+                    {inputType === "text" && ` · ${sentencesBefore} sentences`}
                   </span>
                 </div>
-                <div className="flex items-center gap-1">
-                  <button
-                    onClick={() => setInput("")}
-                    className="p-1.5 rounded-md text-xs transition-all"
-                    style={{ color: "var(--text-muted)" }}
-                    title="Clear"
-                    onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "var(--text-primary)"; }}
-                    onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "var(--text-muted)"; }}
-                  >
-                    <RotateCcw size={12} />
-                  </button>
-                </div>
+                <button
+                  onClick={() => setInput("")}
+                  className="p-1.5 rounded-md text-xs transition-all"
+                  style={{ color: "var(--text-muted)" }}
+                  title="Clear"
+                >
+                  <RotateCcw size={12} />
+                </button>
               </div>
               <div className="flex-1 min-h-0">
                 <MonacoEditor
@@ -513,11 +603,11 @@ export default function PlaygroundPage() {
             >
               <div
                 className="flex items-center justify-between px-4 py-2.5 border-b flex-shrink-0"
-                style={{ borderColor: "rgba(255,255,255,0.06)", background: "rgba(255,255,255,0.02)" }}
+                style={{ borderColor: "var(--border)", background: "var(--bg-card)" }}
               >
                 <div className="flex items-center gap-2">
                   <div className="flex gap-1.5">
-                    {["#f87171", "#fb923c", "#4ade80"].map((c) => (
+                    {["var(--danger)", "var(--warning)", "var(--success)"].map((c) => (
                       <div key={c} className="w-2.5 h-2.5 rounded-full" style={{ background: c, opacity: 0.4 }} />
                     ))}
                   </div>
@@ -528,9 +618,9 @@ export default function PlaygroundPage() {
                         onClick={() => setActiveOutTab(tab)}
                         className="text-xs px-2.5 py-1 rounded-md font-mono transition-all"
                         style={{
-                          background: activeOutTab === tab ? "rgba(126,248,216,0.1)" : "transparent",
+                          background: activeOutTab === tab ? "var(--accent-dim)" : "transparent",
                           color: activeOutTab === tab ? "var(--accent)" : "var(--text-muted)",
-                          border: activeOutTab === tab ? "1px solid rgba(126,248,216,0.2)" : "1px solid transparent",
+                          border: activeOutTab === tab ? "1px solid var(--accent)" : "1px solid transparent",
                         }}
                       >
                         {outputs[tab]?.label}
@@ -545,17 +635,20 @@ export default function PlaygroundPage() {
                   {activeOutTab === "brevit" && savingPct > 0 && (
                     <span
                       className="text-xs font-mono font-semibold px-2 py-0.5 rounded-full"
-                      style={{ background: "rgba(74,222,128,0.12)", color: "var(--success)" }}
+                      style={{ background: "var(--accent-dim)", color: "var(--success)" }}
                     >
                       −{savingPct}%
+                    </span>
+                  )}
+                  {inputType === "text" && activeOutTab === "brevit" && (
+                    <span className="text-xs font-mono" style={{ color: "var(--text-muted)" }}>
+                      {sentencesAfter}/{sentencesBefore} kept
                     </span>
                   )}
                   <button
                     onClick={() => copyText(outputs[activeOutTab]?.content ?? "", `out-${activeOutTab}`)}
                     className="p-1.5 rounded-md transition-all"
-                    style={{ color: "var(--text-muted)", background: "rgba(255,255,255,0.05)" }}
-                    onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "var(--text-primary)"; }}
-                    onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "var(--text-muted)"; }}
+                    style={{ color: "var(--text-muted)", background: "var(--hover-bg)" }}
                   >
                     {copiedKey === `out-${activeOutTab}` ? <Check size={12} style={{ color: "var(--success)" }} /> : <Copy size={12} />}
                   </button>
@@ -566,11 +659,41 @@ export default function PlaygroundPage() {
                   className="text-xs font-mono leading-relaxed whitespace-pre-wrap"
                   style={{ color: "var(--text-primary)" }}
                 >
-                  {outputs[activeOutTab]?.content || "Run brevity() to see output…"}
+                  {outputs[activeOutTab]?.content || "Processing…"}
                 </pre>
               </div>
             </div>
           </div>
+
+          {/* Abbreviation Map */}
+          {abbrevEntries.length > 0 && enableAbbrevs && (
+            <motion.div
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="rounded-xl p-4 mb-6"
+              style={{ background: "var(--bg-surface)", border: "1px solid var(--border)" }}
+            >
+              <div className="flex items-center gap-2 mb-3">
+                <Tag size={13} style={{ color: "var(--purple)" }} />
+                <span className="text-xs font-semibold uppercase tracking-widest" style={{ color: "var(--purple)" }}>
+                  Abbreviation Map
+                </span>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {abbrevEntries.map(([alias, expansion]) => (
+                  <span
+                    key={alias}
+                    className="inline-flex items-center gap-1.5 text-xs font-mono px-2.5 py-1 rounded-lg"
+                    style={{ background: "var(--purple-dim)", border: "1px solid var(--purple)", color: "var(--purple)" }}
+                  >
+                    @{alias}
+                    <span style={{ color: "var(--text-muted)" }}>=</span>
+                    <span style={{ color: "var(--text-secondary)" }}>{expansion}</span>
+                  </span>
+                ))}
+              </div>
+            </motion.div>
+          )}
 
           {/* Token comparison bar */}
           {hasRun && (
@@ -578,7 +701,7 @@ export default function PlaygroundPage() {
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               className="rounded-xl p-4 mb-6"
-              style={{ background: "rgba(255,255,255,0.02)", border: "1px solid var(--border)" }}
+              style={{ background: "var(--bg-surface)", border: "1px solid var(--border)" }}
             >
               <div className="flex items-center justify-between mb-3">
                 <span className="text-xs font-semibold uppercase tracking-widest" style={{ color: "var(--text-muted)" }}>
@@ -590,17 +713,17 @@ export default function PlaygroundPage() {
               </div>
               <div className="space-y-2">
                 {[
-                  { label: "JSON (original)", tokens: tokensBefore, color: "#555" },
-                  { label: "YAML", tokens: tokensYaml, color: "#7e6baa" },
+                  { label: "JSON (original)", tokens: tokensBefore, color: "var(--text-muted)" },
+                  { label: "YAML", tokens: tokensYaml, color: "var(--purple)" },
                   { label: "Brevit", tokens: tokensBrevit, color: "var(--accent)", highlight: true },
                 ].map((item) => {
-                  const pct = (item.tokens / tokensBefore) * 100;
+                  const pct = tokensBefore > 0 ? (item.tokens / tokensBefore) * 100 : 0;
                   return (
                     <div key={item.label} className="flex items-center gap-3">
                       <span className="text-xs w-28 flex-shrink-0 font-mono" style={{ color: "var(--text-muted)" }}>
                         {item.label}
                       </span>
-                      <div className="flex-1 h-6 rounded overflow-hidden" style={{ background: "rgba(255,255,255,0.04)" }}>
+                      <div className="flex-1 h-6 rounded overflow-hidden" style={{ background: "var(--hover-bg)" }}>
                         <motion.div
                           initial={{ width: 0 }}
                           animate={{ width: `${pct}%` }}
@@ -608,7 +731,7 @@ export default function PlaygroundPage() {
                           className="h-full flex items-center px-2"
                           style={{ background: item.color, minWidth: 32 }}
                         >
-                          <span className="text-xs font-mono font-semibold" style={{ color: item.highlight ? "#000" : "#fff" }}>
+                          <span className="text-xs font-mono font-semibold" style={{ color: item.highlight ? "#000" : "var(--bg)" }}>
                             {item.tokens}
                           </span>
                         </motion.div>
@@ -634,18 +757,14 @@ export default function PlaygroundPage() {
               onClick={() => setLlmPanelOpen(!llmPanelOpen)}
               className="w-full flex items-center justify-between px-5 py-4 transition-all"
               style={{
-                background: llmPanelOpen ? "rgba(126,248,216,0.04)" : "rgba(255,255,255,0.02)",
+                background: llmPanelOpen ? "var(--accent-dim)" : "var(--bg-surface)",
                 color: "var(--text-primary)",
-              }}
-              onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "rgba(126,248,216,0.04)"; }}
-              onMouseLeave={(e) => {
-                if (!llmPanelOpen) (e.currentTarget as HTMLButtonElement).style.background = "rgba(255,255,255,0.02)";
               }}
             >
               <div className="flex items-center gap-2">
                 <Bot size={16} style={{ color: "var(--accent)" }} />
                 <span className="font-medium text-sm">LLM Comparison</span>
-                <span className="text-xs px-2 py-0.5 rounded-full" style={{ background: "rgba(126,248,216,0.08)", color: "var(--accent)", border: "1px solid rgba(126,248,216,0.15)" }}>
+                <span className="text-xs px-2 py-0.5 rounded-full" style={{ background: "var(--accent-dim)", color: "var(--accent)", border: "1px solid var(--accent)" }}>
                   via Puter.js
                 </span>
                 <span className="text-xs" style={{ color: "var(--text-muted)" }}>
@@ -673,25 +792,24 @@ export default function PlaygroundPage() {
                 >
                   <div
                     className="px-5 py-5 border-t"
-                    style={{ borderColor: "var(--border)", background: "rgba(0,0,0,0.2)" }}
+                    style={{ borderColor: "var(--border)", background: "var(--bg-code)" }}
                   >
-                    <div className="text-xs mb-4 flex items-start gap-2 p-3 rounded-lg" style={{ background: "rgba(56,189,248,0.06)", border: "1px solid rgba(56,189,248,0.15)", color: "var(--text-secondary)" }}>
-                      <Info size={13} style={{ color: "#38bdf8", flexShrink: 0, marginTop: 1 }} />
+                    <div className="text-xs mb-4 flex items-start gap-2 p-3 rounded-lg" style={{ background: "var(--accent-dim)", border: "1px solid var(--accent)", color: "var(--text-secondary)" }}>
+                      <Info size={13} style={{ color: "var(--accent)", flexShrink: 0, marginTop: 1 }} />
                       Sends your input to an LLM via{" "}
-                      <a href="https://developer.puter.com/tutorials/free-unlimited-openai-api/" target="_blank" rel="noopener noreferrer" className="underline" style={{ color: "#38bdf8" }}>
+                      <a href="https://developer.puter.com/tutorials/free-unlimited-openai-api/" target="_blank" rel="noopener noreferrer" className="underline" style={{ color: "var(--accent)" }}>
                         Puter&apos;s free client-side API
                       </a>. No keys stored in this app.
                     </div>
 
                     <div className="grid sm:grid-cols-2 gap-4 mb-4">
-                      {/* Model selector */}
                       <div>
                         <label className="block text-xs mb-1.5" style={{ color: "var(--text-muted)" }}>Model</label>
                         <select
                           value={llmModel}
                           onChange={(e) => setLlmModel(e.target.value as PuterModel)}
                           className="w-full text-sm px-3 py-2 rounded-lg outline-none"
-                          style={{ background: "rgba(255,255,255,0.05)", border: "1px solid var(--border)", color: "var(--text-secondary)" }}
+                          style={{ background: "var(--bg-surface)", border: "1px solid var(--border)", color: "var(--text-secondary)" }}
                         >
                           {PUTER_MODELS.map((m) => (
                             <option key={m.id} value={m.id}>
@@ -700,17 +818,14 @@ export default function PlaygroundPage() {
                           ))}
                         </select>
                       </div>
-                      {/* Prompt */}
                       <div>
                         <label className="block text-xs mb-1.5" style={{ color: "var(--text-muted)" }}>Prompt / Task</label>
                         <input
                           value={llmPrompt}
                           onChange={(e) => setLlmPrompt(e.target.value)}
                           className="w-full text-sm px-3 py-2 rounded-lg outline-none"
-                          style={{ background: "rgba(255,255,255,0.05)", border: "1px solid var(--border)", color: "var(--text-primary)" }}
+                          style={{ background: "var(--bg-surface)", border: "1px solid var(--border)", color: "var(--text-primary)" }}
                           placeholder="e.g. Summarize the content…"
-                          onFocus={(e) => { e.currentTarget.style.borderColor = "rgba(126,248,216,0.3)"; }}
-                          onBlur={(e) => { e.currentTarget.style.borderColor = "var(--border)"; }}
                         />
                       </div>
                     </div>
@@ -732,7 +847,7 @@ export default function PlaygroundPage() {
                         <button
                           onClick={() => { setOriginalResponse(""); setBrevitResponse(""); }}
                           className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-sm transition-all"
-                          style={{ background: "rgba(255,255,255,0.05)", border: "1px solid var(--border)", color: "var(--text-muted)" }}
+                          style={{ background: "var(--hover-bg)", border: "1px solid var(--border)", color: "var(--text-muted)" }}
                         >
                           <RotateCcw size={13} /> Clear
                         </button>
@@ -740,7 +855,7 @@ export default function PlaygroundPage() {
                     </div>
 
                     {llmError && (
-                      <div className="mb-4 p-3 rounded-lg text-sm" style={{ background: "rgba(248,113,113,0.08)", border: "1px solid rgba(248,113,113,0.2)", color: "#f87171" }}>
+                      <div className="mb-4 p-3 rounded-lg text-sm" style={{ background: "rgba(248,113,113,0.08)", border: "1px solid var(--danger)", color: "var(--danger)" }}>
                         {llmError}
                       </div>
                     )}
@@ -792,13 +907,13 @@ function ResponsePanel({
     <div
       className="rounded-xl overflow-hidden"
       style={{
-        border: isCompressed ? "1px solid rgba(126,248,216,0.2)" : "1px solid var(--border)",
-        background: isCompressed ? "rgba(126,248,216,0.03)" : "rgba(255,255,255,0.02)",
+        border: isCompressed ? "1px solid var(--accent)" : "1px solid var(--border)",
+        background: isCompressed ? "var(--accent-dim)" : "var(--bg-surface)",
       }}
     >
       <div
         className="flex items-center justify-between px-3 py-2 border-b"
-        style={{ borderColor: isCompressed ? "rgba(126,248,216,0.15)" : "rgba(255,255,255,0.06)" }}
+        style={{ borderColor: isCompressed ? "var(--accent)" : "var(--border)" }}
       >
         <div>
           <span className="text-xs font-medium" style={{ color: isCompressed ? "var(--accent)" : "var(--text-secondary)" }}>
@@ -808,7 +923,7 @@ function ResponsePanel({
             ~{tokens} input tokens
           </span>
         </div>
-        <button onClick={onCopy} className="p-1.5 rounded-md" style={{ color: "var(--text-muted)", background: "rgba(255,255,255,0.05)" }}>
+        <button onClick={onCopy} className="p-1.5 rounded-md" style={{ color: "var(--text-muted)", background: "var(--hover-bg)" }}>
           {copied ? <Check size={11} style={{ color: "var(--success)" }} /> : <Copy size={11} />}
         </button>
       </div>

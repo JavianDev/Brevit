@@ -30,7 +30,7 @@ export function Footer() {
       className="relative mt-24 border-t"
       style={{ borderColor: "var(--border)" }}
     >
-      <div className="max-w-6xl mx-auto px-5 py-16">
+      <div className="max-w-7xl mx-auto px-5 py-16">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-10 mb-12">
           {/* Brand */}
           <div className="col-span-2 md:col-span-1">
@@ -44,9 +44,9 @@ export function Footer() {
                   key={badge}
                   className="text-xs px-2 py-0.5 rounded-full font-mono"
                   style={{
-                    background: "rgba(126,248,216,0.08)",
+                    background: "var(--accent-dim)",
                     color: "var(--accent)",
-                    border: "1px solid rgba(126,248,216,0.15)",
+                    border: "1px solid var(--accent)",
                   }}
                 >
                   {badge}

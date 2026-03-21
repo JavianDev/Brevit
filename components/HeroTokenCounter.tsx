@@ -43,8 +43,8 @@ export function HeroTokenCounter() {
       <div
         className="rounded-xl p-4 mb-3 relative overflow-hidden"
         style={{
-          background: "rgba(255,255,255,0.03)",
-          border: "1px solid rgba(255,255,255,0.07)",
+          background: "var(--bg-surface)",
+          border: "1px solid var(--border)",
         }}
       >
         <div className="flex items-center justify-between mb-2">

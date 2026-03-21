@@ -82,7 +82,7 @@ function CopyButton({ text }: { text: string }) {
     <button
       onClick={doCopy}
       className="p-1.5 rounded-md transition-all"
-      style={{ color: "var(--text-muted)", background: "rgba(255,255,255,0.05)" }}
+      style={{ color: "var(--text-muted)", background: "var(--hover-bg)" }}
       onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "var(--text-primary)"; }}
       onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "var(--text-muted)"; }}
     >
@@ -130,7 +130,7 @@ export function InstallTabs() {
             <span
               className="relative z-10 text-xs px-2 py-0.5 rounded-full font-mono"
               style={{
-                background: active === t.id ? "rgba(126,248,216,0.15)" : "rgba(255,255,255,0.05)",
+                background: active === t.id ? "var(--accent-dim)" : "var(--hover-bg)",
                 color: active === t.id ? "var(--accent)" : "var(--text-muted)",
               }}
             >

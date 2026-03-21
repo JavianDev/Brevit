@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown, Menu, X, ExternalLink, Github, Zap, BookOpen, Code2, FlaskConical, FileText, BarChart3, Layers } from "lucide-react";
 import { Logo } from "./Logo";
+import { ThemeToggle } from "./ThemeToggle";
 import { cn } from "@/lib/utils";
 
 const NAV_ITEMS = [
@@ -61,9 +62,9 @@ function DropdownMenu({ items, onClose }: { items: DropdownItem[]; onClose: () =
       transition={{ duration: 0.15, ease: "easeOut" }}
       className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-72 rounded-xl overflow-hidden z-50"
       style={{
-        background: "rgba(10,10,16,0.95)",
-        border: "1px solid rgba(255,255,255,0.08)",
-        boxShadow: "0 20px 60px rgba(0,0,0,0.8), 0 0 0 1px rgba(126,248,216,0.05)",
+        background: "var(--dropdown-bg)",
+        border: "1px solid var(--border)",
+        boxShadow: "0 20px 60px rgba(0,0,0,0.3), 0 0 0 1px var(--accent-dim)",
         backdropFilter: "blur(16px)",
       }}
     >
@@ -78,7 +79,7 @@ function DropdownMenu({ items, onClose }: { items: DropdownItem[]; onClose: () =
             className="flex items-start gap-3 px-3 py-2.5 rounded-lg group transition-colors duration-150"
             style={{ color: "var(--text-secondary)" }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.background = "rgba(126,248,216,0.06)";
+              e.currentTarget.style.background = "var(--accent-dim)";
               e.currentTarget.style.color = "var(--text-primary)";
             }}
             onMouseLeave={(e) => {
@@ -145,12 +146,12 @@ export function Navbar() {
         transition={{ duration: 0.4, ease: "easeOut" }}
         className="fixed top-0 left-0 right-0 z-50 transition-all duration-300"
         style={{
-          background: scrolled ? "rgba(0,0,0,0.85)" : "transparent",
-          borderBottom: scrolled ? "1px solid rgba(255,255,255,0.06)" : "1px solid transparent",
+          background: scrolled ? "var(--nav-bg)" : "transparent",
+          borderBottom: scrolled ? `1px solid var(--nav-border)` : "1px solid transparent",
           backdropFilter: scrolled ? "blur(20px)" : "none",
         }}
       >
-        <div className="max-w-6xl mx-auto px-5 h-14 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-5 h-14 flex items-center justify-between">
           {/* Logo */}
           <Link href="/" className="flex-shrink-0">
             <Logo size={28} showWordmark />
@@ -164,7 +165,7 @@ export function Navbar() {
                   onClick={() => setOpenMenu(openMenu === nav.label ? null : nav.label)}
                   className="flex items-center gap-1 px-3 py-2 rounded-lg text-sm font-medium transition-colors duration-150"
                   style={{ color: openMenu === nav.label ? "var(--text-primary)" : "var(--text-secondary)" }}
-                  onMouseEnter={(e) => { e.currentTarget.style.color = "var(--text-primary)"; e.currentTarget.style.background = "rgba(255,255,255,0.04)"; }}
+                  onMouseEnter={(e) => { e.currentTarget.style.color = "var(--text-primary)"; e.currentTarget.style.background = "var(--hover-bg)"; }}
                   onMouseLeave={(e) => { e.currentTarget.style.color = openMenu === nav.label ? "var(--text-primary)" : "var(--text-secondary)"; e.currentTarget.style.background = "transparent"; }}
                 >
                   {nav.label}
@@ -185,12 +186,13 @@ export function Navbar() {
 
           {/* Right side CTA */}
           <div className="hidden md:flex items-center gap-2">
+            <ThemeToggle />
             <Link
               href="/playground"
               className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-sm font-medium transition-all duration-150"
-              style={{ color: "var(--text-secondary)", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.07)" }}
-              onMouseEnter={(e) => { e.currentTarget.style.color = "var(--text-primary)"; e.currentTarget.style.background = "rgba(255,255,255,0.07)"; }}
-              onMouseLeave={(e) => { e.currentTarget.style.color = "var(--text-secondary)"; e.currentTarget.style.background = "rgba(255,255,255,0.04)"; }}
+              style={{ color: "var(--text-secondary)", background: "var(--hover-bg)", border: "1px solid var(--border)" }}
+              onMouseEnter={(e) => { e.currentTarget.style.color = "var(--text-primary)"; }}
+              onMouseLeave={(e) => { e.currentTarget.style.color = "var(--text-secondary)"; }}
             >
               <FlaskConical size={13} />
               Playground
@@ -226,12 +228,12 @@ export function Navbar() {
             exit={{ opacity: 0, y: -10 }}
             className="fixed inset-x-0 top-14 z-40 md:hidden"
             style={{
-              background: "rgba(0,0,0,0.97)",
-              borderBottom: "1px solid rgba(255,255,255,0.08)",
+              background: "var(--dropdown-bg)",
+              borderBottom: `1px solid var(--border)`,
               backdropFilter: "blur(20px)",
             }}
           >
-            <div className="max-w-6xl mx-auto px-5 py-4 space-y-1">
+            <div className="max-w-7xl mx-auto px-5 py-4 space-y-1">
               {NAV_ITEMS.map((nav) => (
                 <div key={nav.label}>
                   <p className="text-xs font-semibold uppercase tracking-widest px-2 py-1.5" style={{ color: "var(--text-muted)" }}>

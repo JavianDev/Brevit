@@ -56,7 +56,7 @@ export function MiniDemo() {
           <span className="text-xs font-mono font-semibold uppercase tracking-wider" style={{ color: "var(--text-muted)" }}>
             Input
           </span>
-          <span className="text-xs font-mono px-2 py-0.5 rounded-full" style={{ background: "rgba(255,255,255,0.05)", color: "var(--text-muted)" }}>
+          <span className="text-xs font-mono px-2 py-0.5 rounded-full" style={{ background: "var(--hover-bg)", color: "var(--text-muted)" }}>
             ~{tokensBefore} tokens
           </span>
         </div>
@@ -120,7 +120,7 @@ export function MiniDemo() {
           <button
             onClick={copyOutput}
             className="absolute top-2 right-2 p-1.5 rounded-md transition-all"
-            style={{ color: "var(--text-muted)", background: "rgba(255,255,255,0.05)" }}
+            style={{ color: "var(--text-muted)", background: "var(--hover-bg)" }}
             onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "var(--text-primary)"; }}
             onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "var(--text-muted)"; }}
           >
@@ -148,7 +148,7 @@ export function MiniDemo() {
               <span>Token savings</span>
               <span style={{ color: "var(--success)" }}>{tokensBefore - tokensAfter} tokens saved ({saving}%)</span>
             </div>
-            <div className="h-1.5 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.06)" }}>
+            <div className="h-1.5 rounded-full overflow-hidden" style={{ background: "var(--hover-bg)" }}>
               <motion.div
                 initial={{ width: 0 }}
                 animate={{ width: `${saving}%` }}

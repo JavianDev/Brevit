@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
@@ -8,15 +9,39 @@ import { MiniDemo } from "@/components/MiniDemo";
 import { TokenSavingsChart } from "@/components/TokenSavingsChart";
 import { InstallTabs } from "@/components/InstallTabs";
 import { CostCalculator } from "@/components/CostCalculator";
+import { HowItWorks } from "@/components/HowItWorks";
+import { JsonDeepDive } from "@/components/JsonDeepDive";
+import { TextDeepDive } from "@/components/TextDeepDive";
+import { AbbreviationShowcase } from "@/components/AbbreviationShowcase";
+import { MultiLanguageSection } from "@/components/MultiLanguageSection";
 import {
   Zap, Layers, FileText, Code2, Puzzle, BarChart3,
-  ArrowRight, FlaskConical, ChevronRight, Shield, Globe
+  ArrowRight, FlaskConical, ChevronRight, Shield, Globe,
+  Copy, Check, CheckCircle2, AlertTriangle,
 } from "lucide-react";
 
 function Section({ children, className = "", id }: { children: React.ReactNode; className?: string; id?: string }) {
   return (
-    <section id={id} className={`max-w-6xl mx-auto px-5 ${className}`}>
+    <section id={id} className={`max-w-7xl mx-auto px-5 ${className}`}>
       {children}
+    </section>
+  );
+}
+
+function FullBleedSection({
+  children,
+  className = "",
+  id,
+  style,
+}: {
+  children: React.ReactNode;
+  className?: string;
+  id?: string;
+  style?: React.CSSProperties;
+}) {
+  return (
+    <section id={id} className={`w-full ${className}`} style={style}>
+      <div className="max-w-7xl mx-auto px-5">{children}</div>
     </section>
   );
 }
@@ -29,6 +54,36 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
         {children}
       </span>
     </div>
+  );
+}
+
+function InstallBadge({ cmd, label }: { cmd: string; label: string }) {
+  const [copied, setCopied] = useState(false);
+  const copy = () => {
+    navigator.clipboard.writeText(cmd);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1500);
+  };
+
+  return (
+    <button
+      onClick={copy}
+      className="flex items-center gap-3 px-4 py-3 rounded-xl transition-all group w-full text-left"
+      style={{
+        background: "var(--bg-surface)",
+        border: "1px solid var(--border)",
+      }}
+    >
+      <span className="text-xs font-semibold" style={{ color: "var(--text-muted)" }}>
+        {label}
+      </span>
+      <code className="text-xs font-mono flex-1 truncate" style={{ color: "var(--accent)" }}>
+        {cmd}
+      </code>
+      <span style={{ color: "var(--text-muted)" }}>
+        {copied ? <Check size={12} /> : <Copy size={12} />}
+      </span>
+    </button>
   );
 }
 
@@ -72,37 +127,52 @@ const BADGES = [
   { label: "40–60% token savings", color: "var(--success)" },
 ];
 
+const GOOD_FOR = [
+  "LLM prompt pipelines with structured JSON data",
+  "RAG systems where context window is limited",
+  "Batch document processing with high API call volume",
+  "Any workload where reducing token count saves cost",
+  "Multi-turn conversations with accumulated context",
+  "Function calling / tool-use payloads with nested objects",
+];
+
+const NOT_FOR = [
+  "Human-readable API responses — Brevit is for LLM input",
+  "Data under ~100 tokens — overhead exceeds savings",
+  "Strict JSON schema requirements downstream",
+  "Real-time streaming where compression latency matters",
+  "Binary data or media files",
+  "Cases where output must be valid JSON",
+];
+
 export default function HomePage() {
   return (
     <>
       <Navbar />
       <main className="relative pt-14 overflow-hidden">
-        {/* Grid background */}
         <div className="fixed inset-0 bg-grid opacity-100 pointer-events-none" />
 
         {/* ── Hero ───────────────────────────────────────────────── */}
         <section className="relative min-h-screen flex items-center">
-          {/* Radial glow */}
           <div
             className="absolute inset-0 pointer-events-none"
             style={{
-              background: "radial-gradient(ellipse 80% 60% at 50% 0%, rgba(126,248,216,0.07) 0%, transparent 70%)",
+              background: "radial-gradient(ellipse 80% 60% at 50% 0%, var(--accent-glow) 0%, transparent 70%)",
+              opacity: 0.15,
             }}
           />
 
-          <div className="max-w-6xl mx-auto px-5 w-full py-24">
+          <div className="max-w-[1400px] mx-auto px-5 w-full py-24">
             <div className="grid lg:grid-cols-2 gap-16 items-center">
-              {/* Left */}
               <div>
-                {/* Badge row */}
                 <div className="flex flex-wrap gap-2 mb-8">
                   {BADGES.map((b) => (
                     <span
                       key={b.label}
                       className="text-xs px-2.5 py-1 rounded-full font-mono"
                       style={{
-                        background: "rgba(255,255,255,0.05)",
-                        border: "1px solid rgba(255,255,255,0.08)",
+                        background: "var(--hover-bg)",
+                        border: "1px solid var(--border)",
                         color: b.color,
                       }}
                     >
@@ -127,7 +197,7 @@ export default function HomePage() {
                   abbreviating repeated keys, and summarizing text. Same quality responses, fraction of the tokens.
                 </p>
 
-                <div className="flex flex-wrap gap-3">
+                <div className="flex flex-wrap gap-3 mb-8">
                   <Link
                     href="/docs/javascript"
                     className="flex items-center gap-2 px-5 py-3 rounded-xl text-sm font-semibold transition-all duration-150"
@@ -142,40 +212,47 @@ export default function HomePage() {
                     href="/playground"
                     className="flex items-center gap-2 px-5 py-3 rounded-xl text-sm font-semibold transition-all duration-150"
                     style={{
-                      background: "rgba(255,255,255,0.05)",
-                      border: "1px solid rgba(255,255,255,0.1)",
+                      background: "var(--hover-bg)",
+                      border: "1px solid var(--border)",
                       color: "var(--text-primary)",
                     }}
-                    onMouseEnter={(e) => { (e.currentTarget as HTMLAnchorElement).style.background = "rgba(255,255,255,0.08)"; }}
-                    onMouseLeave={(e) => { (e.currentTarget as HTMLAnchorElement).style.background = "rgba(255,255,255,0.05)"; }}
+                    onMouseEnter={(e) => { (e.currentTarget as HTMLAnchorElement).style.borderColor = "var(--accent)"; }}
+                    onMouseLeave={(e) => { (e.currentTarget as HTMLAnchorElement).style.borderColor = "var(--border)"; }}
                   >
                     <FlaskConical size={14} />
                     Try Playground
                   </Link>
                 </div>
 
-                {/* Install strip */}
-                <div
-                  className="flex items-center gap-3 mt-8 px-4 py-3 rounded-xl w-fit"
-                  style={{
-                    background: "rgba(255,255,255,0.03)",
-                    border: "1px solid rgba(255,255,255,0.07)",
-                  }}
-                >
-                  <code className="text-sm font-mono" style={{ color: "var(--text-muted)" }}>
-                    npm install{" "}
-                    <span style={{ color: "var(--accent)" }}>brevit</span>
-                  </code>
+                {/* Triple install strip */}
+                <div className="grid sm:grid-cols-3 gap-2">
+                  <InstallBadge cmd="npm install brevit" label="JS" />
+                  <InstallBadge cmd="pip install brevit" label="PY" />
+                  <InstallBadge cmd="dotnet add package Brevit" label=".NET" />
                 </div>
               </div>
 
-              {/* Right — live token counter */}
               <div className="lg:pl-8">
                 <HeroTokenCounter />
               </div>
             </div>
           </div>
         </section>
+
+        {/* ── How It Works ─────────────────────────────────────────── */}
+        <FullBleedSection
+          className="py-24"
+          style={{ background: "var(--bg-surface)" }}
+        >
+          <SectionLabel>How It Works</SectionLabel>
+          <h2 className="text-3xl font-bold tracking-tight mb-3" style={{ letterSpacing: "-0.02em" }}>
+            Four steps from raw data to optimized output
+          </h2>
+          <p className="text-base mb-10" style={{ color: "var(--text-secondary)" }}>
+            Brevit auto-detects your input type and applies the right compression strategy. No configuration needed.
+          </p>
+          <HowItWorks />
+        </FullBleedSection>
 
         {/* ── Live Demo ───────────────────────────────────────────── */}
         <Section className="py-24">
@@ -213,7 +290,7 @@ export default function HomePage() {
             Everything you need to optimize LLM inputs
           </h2>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {FEATURES.map((feature, i) => (
+            {FEATURES.map((feature) => (
               <div
                 key={feature.title}
                 className="rounded-xl p-5 transition-all duration-200 group"
@@ -222,8 +299,8 @@ export default function HomePage() {
                   border: "1px solid var(--border)",
                 }}
                 onMouseEnter={(e) => {
-                  (e.currentTarget as HTMLDivElement).style.borderColor = "rgba(126,248,216,0.2)";
-                  (e.currentTarget as HTMLDivElement).style.background = "rgba(126,248,216,0.03)";
+                  (e.currentTarget as HTMLDivElement).style.borderColor = "var(--accent)";
+                  (e.currentTarget as HTMLDivElement).style.background = "var(--accent-dim)";
                 }}
                 onMouseLeave={(e) => {
                   (e.currentTarget as HTMLDivElement).style.borderColor = "var(--border)";
@@ -232,7 +309,7 @@ export default function HomePage() {
               >
                 <div
                   className="w-9 h-9 rounded-lg flex items-center justify-center mb-4"
-                  style={{ background: "rgba(126,248,216,0.1)" }}
+                  style={{ background: "var(--accent-dim)" }}
                 >
                   <feature.icon size={18} style={{ color: "var(--accent)" }} />
                 </div>
@@ -244,6 +321,50 @@ export default function HomePage() {
             ))}
           </div>
         </Section>
+
+        {/* ── JSON Deep Dive ──────────────────────────────────────── */}
+        <FullBleedSection
+          className="py-24"
+          id="json-compression"
+          style={{ background: "var(--bg-surface)" }}
+        >
+          <SectionLabel>JSON Compression</SectionLabel>
+          <h2 className="text-3xl font-bold tracking-tight mb-3" style={{ letterSpacing: "-0.02em" }}>
+            Four techniques for maximum JSON reduction
+          </h2>
+          <p className="text-base mb-10" style={{ color: "var(--text-secondary)" }}>
+            Brevit analyzes your JSON structure and picks the most efficient encoding for each node.
+          </p>
+          <JsonDeepDive />
+        </FullBleedSection>
+
+        {/* ── Text Compression Deep Dive ──────────────────────────── */}
+        <Section className="py-24" id="text-compression">
+          <SectionLabel>Text Compression</SectionLabel>
+          <h2 className="text-3xl font-bold tracking-tight mb-3" style={{ letterSpacing: "-0.02em" }}>
+            TextRank extractive summarization
+          </h2>
+          <p className="text-base mb-10" style={{ color: "var(--text-secondary)" }}>
+            Deterministic, graph-based sentence scoring. Keep the most important sentences, discard the rest.
+          </p>
+          <TextDeepDive />
+        </Section>
+
+        {/* ── Abbreviation Engine ─────────────────────────────────── */}
+        <FullBleedSection
+          className="py-24"
+          id="abbreviation"
+          style={{ background: "var(--bg-surface)" }}
+        >
+          <SectionLabel>Abbreviation Engine</SectionLabel>
+          <h2 className="text-3xl font-bold tracking-tight mb-3" style={{ letterSpacing: "-0.02em" }}>
+            Intelligent @alias generation
+          </h2>
+          <p className="text-base mb-10" style={{ color: "var(--text-secondary)" }}>
+            Repeated key prefixes are automatically aliased. Brevit only abbreviates when it actually saves tokens.
+          </p>
+          <AbbreviationShowcase />
+        </FullBleedSection>
 
         {/* ── Token Savings Chart ─────────────────────────────────── */}
         <Section className="py-24" id="benchmarks">
@@ -280,25 +401,88 @@ export default function HomePage() {
           </div>
         </Section>
 
+        {/* ── Multi-Language ───────────────────────────────────────── */}
+        <FullBleedSection
+          className="py-24"
+          style={{ background: "var(--bg-surface)" }}
+        >
+          <SectionLabel>Multi-Language</SectionLabel>
+          <h2 className="text-3xl font-bold tracking-tight mb-3" style={{ letterSpacing: "-0.02em" }}>
+            Same API. Three ecosystems.
+          </h2>
+          <p className="text-base mb-10" style={{ color: "var(--text-secondary)" }}>
+            Learn Brevit once and use it in JavaScript, Python, or .NET. Identical patterns, identical output.
+          </p>
+          <MultiLanguageSection />
+        </FullBleedSection>
+
+        {/* ── When to Use ─────────────────────────────────────────── */}
+        <Section className="py-24" id="when-to-use">
+          <SectionLabel>Guidance</SectionLabel>
+          <h2 className="text-3xl font-bold tracking-tight mb-10" style={{ letterSpacing: "-0.02em" }}>
+            When to use Brevit
+          </h2>
+          <div className="grid md:grid-cols-2 gap-6">
+            <div
+              className="rounded-xl p-6"
+              style={{ background: "var(--bg-surface)", border: "1px solid var(--border)" }}
+            >
+              <div className="flex items-center gap-2 mb-5">
+                <CheckCircle2 size={18} style={{ color: "var(--success)" }} />
+                <h3 className="text-base font-semibold" style={{ color: "var(--success)" }}>
+                  Perfect for
+                </h3>
+              </div>
+              <ul className="space-y-3">
+                {GOOD_FOR.map((item) => (
+                  <li key={item} className="flex items-start gap-2.5 text-sm" style={{ color: "var(--text-secondary)" }}>
+                    <span className="mt-0.5 flex-shrink-0" style={{ color: "var(--success)" }}>✓</span>
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div
+              className="rounded-xl p-6"
+              style={{ background: "var(--bg-surface)", border: "1px solid var(--border)" }}
+            >
+              <div className="flex items-center gap-2 mb-5">
+                <AlertTriangle size={18} style={{ color: "var(--warning)" }} />
+                <h3 className="text-base font-semibold" style={{ color: "var(--warning)" }}>
+                  Consider alternatives
+                </h3>
+              </div>
+              <ul className="space-y-3">
+                {NOT_FOR.map((item) => (
+                  <li key={item} className="flex items-start gap-2.5 text-sm" style={{ color: "var(--text-secondary)" }}>
+                    <span className="mt-0.5 flex-shrink-0" style={{ color: "var(--warning)" }}>⚠</span>
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </Section>
+
         {/* ── The Brevit Standard teaser ──────────────────────────── */}
         <Section className="py-20">
           <div
             className="rounded-2xl p-8 md:p-12 relative overflow-hidden"
             style={{
-              background: "linear-gradient(135deg, rgba(126,248,216,0.06) 0%, rgba(167,139,250,0.06) 100%)",
-              border: "1px solid rgba(126,248,216,0.15)",
+              background: "linear-gradient(135deg, var(--accent-dim) 0%, var(--purple-dim) 100%)",
+              border: "1px solid var(--accent)",
             }}
           >
             <div
               className="absolute top-0 right-0 w-64 h-64 rounded-full blur-3xl pointer-events-none"
-              style={{ background: "rgba(126,248,216,0.08)", transform: "translate(30%, -30%)" }}
+              style={{ background: "var(--accent-glow)", transform: "translate(30%, -30%)", opacity: 0.3 }}
             />
             <div className="relative z-10 max-w-2xl">
               <span
                 className="inline-flex items-center gap-2 text-xs font-mono px-3 py-1 rounded-full mb-6"
                 style={{
-                  background: "rgba(126,248,216,0.1)",
-                  border: "1px solid rgba(126,248,216,0.2)",
+                  background: "var(--accent-dim)",
+                  border: "1px solid var(--accent)",
                   color: "var(--accent)",
                 }}
               >
@@ -328,8 +512,8 @@ export default function HomePage() {
                 <code
                   className="flex items-center px-4 py-3 rounded-xl text-sm font-mono"
                   style={{
-                    background: "rgba(0,0,0,0.4)",
-                    border: "1px solid rgba(255,255,255,0.1)",
+                    background: "var(--bg-code)",
+                    border: "1px solid var(--border)",
                     color: "var(--accent)",
                   }}
                 >
@@ -364,12 +548,12 @@ export default function HomePage() {
                     rel="noopener noreferrer"
                     className="flex items-center gap-3 px-4 py-3 rounded-xl transition-all"
                     style={{
-                      background: "rgba(255,255,255,0.03)",
+                      background: "var(--hover-bg)",
                       border: "1px solid var(--border)",
                       color: "var(--text-secondary)",
                     }}
                     onMouseEnter={(e) => {
-                      (e.currentTarget as HTMLAnchorElement).style.borderColor = "rgba(126,248,216,0.2)";
+                      (e.currentTarget as HTMLAnchorElement).style.borderColor = "var(--accent)";
                       (e.currentTarget as HTMLAnchorElement).style.color = "var(--text-primary)";
                     }}
                     onMouseLeave={(e) => {
@@ -381,7 +565,7 @@ export default function HomePage() {
                     <span className="text-sm flex-1">{pkg.label}</span>
                     <span
                       className="text-xs px-2 py-0.5 rounded-full font-mono"
-                      style={{ background: "rgba(126,248,216,0.1)", color: "var(--accent)" }}
+                      style={{ background: "var(--accent-dim)", color: "var(--accent)" }}
                     >
                       {pkg.badge}
                     </span>
@@ -434,12 +618,12 @@ export default function HomePage() {
                 href="/playground"
                 className="flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-semibold transition-all"
                 style={{
-                  background: "rgba(255,255,255,0.05)",
-                  border: "1px solid rgba(255,255,255,0.1)",
+                  background: "var(--hover-bg)",
+                  border: "1px solid var(--border)",
                   color: "var(--text-primary)",
                 }}
-                onMouseEnter={(e) => { (e.currentTarget as HTMLAnchorElement).style.background = "rgba(255,255,255,0.08)"; }}
-                onMouseLeave={(e) => { (e.currentTarget as HTMLAnchorElement).style.background = "rgba(255,255,255,0.05)"; }}
+                onMouseEnter={(e) => { (e.currentTarget as HTMLAnchorElement).style.borderColor = "var(--accent)"; }}
+                onMouseLeave={(e) => { (e.currentTarget as HTMLAnchorElement).style.borderColor = "var(--border)"; }}
               >
                 <FlaskConical size={14} />
                 Open Playground

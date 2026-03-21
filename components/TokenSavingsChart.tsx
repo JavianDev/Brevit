@@ -68,7 +68,7 @@ export function TokenSavingsChart() {
                     <span className="text-xs font-mono w-12 text-right flex-shrink-0" style={{ color: "var(--text-muted)" }}>
                       {bar.label}
                     </span>
-                    <div className="flex-1 h-7 rounded-md overflow-hidden relative" style={{ background: "rgba(255,255,255,0.04)" }}>
+                    <div className="flex-1 h-7 rounded-md overflow-hidden relative" style={{ background: "var(--hover-bg)" }}>
                       <motion.div
                         initial={{ width: 0 }}
                         animate={{ width: inView ? `${width}%` : 0 }}
