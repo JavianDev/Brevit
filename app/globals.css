@@ -1,36 +1,8 @@
 @import "tailwindcss";
 
 @layer base {
-  :root, .dark {
-    --bg: #000000;
-    --bg-surface: #0d0d0d;
-    --bg-card: #111111;
-    --bg-code: #0a0a0f;
-    --border: #1e1e1e;
-    --border-subtle: #161616;
-    --text-primary: #f5f5f5;
-    --text-secondary: #888888;
-    --text-muted: #555555;
-    --accent: #7EF8D8;
-    --accent-dim: rgba(126, 248, 216, 0.15);
-    --accent-glow: rgba(126, 248, 216, 0.4);
-    --purple: #a78bfa;
-    --purple-dim: rgba(167, 139, 250, 0.15);
-    --success: #4ade80;
-    --warning: #fb923c;
-    --danger: #f87171;
-    --grid-line: rgba(255,255,255,0.02);
-    --nav-bg: rgba(0,0,0,0.85);
-    --nav-border: rgba(255,255,255,0.06);
-    --dropdown-bg: rgba(10,10,16,0.95);
-    --hover-bg: rgba(255,255,255,0.04);
-    --code-keyword: #c792ea;
-    --code-string: #c3e88d;
-    --code-number: #f78c6c;
-    --code-comment: #546e7a;
-    --code-function: #82aaff;
-  }
-
+  /* Default (light): matches next-themes defaultTheme="light" and avoids dark flash before hydration */
+  :root,
   .light {
     --bg: #fafafa;
     --bg-surface: #ffffff;
@@ -59,6 +31,36 @@
     --code-number: #ea580c;
     --code-comment: #94a3b8;
     --code-function: #2563eb;
+  }
+
+  .dark {
+    --bg: #000000;
+    --bg-surface: #0d0d0d;
+    --bg-card: #111111;
+    --bg-code: #0a0a0f;
+    --border: #1e1e1e;
+    --border-subtle: #161616;
+    --text-primary: #f5f5f5;
+    --text-secondary: #888888;
+    --text-muted: #555555;
+    --accent: #7EF8D8;
+    --accent-dim: rgba(126, 248, 216, 0.15);
+    --accent-glow: rgba(126, 248, 216, 0.4);
+    --purple: #a78bfa;
+    --purple-dim: rgba(167, 139, 250, 0.15);
+    --success: #4ade80;
+    --warning: #fb923c;
+    --danger: #f87171;
+    --grid-line: rgba(255,255,255,0.02);
+    --nav-bg: rgba(0,0,0,0.85);
+    --nav-border: rgba(255,255,255,0.06);
+    --dropdown-bg: rgba(10,10,16,0.95);
+    --hover-bg: rgba(255,255,255,0.04);
+    --code-keyword: #c792ea;
+    --code-string: #c3e88d;
+    --code-number: #f78c6c;
+    --code-comment: #546e7a;
+    --code-function: #82aaff;
   }
 }
 
