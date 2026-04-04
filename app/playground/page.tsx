@@ -3,10 +3,11 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 import dynamic from "next/dynamic";
 import Script from "next/script";
+import mammoth from "mammoth";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  Play, Copy, Check, ChevronDown, Zap, Bot, Share2,
-  Info, Loader2, RotateCcw, FileText, FileJson, FlaskConical, SlidersHorizontal, Tag,
+  Play, Copy, Check, ChevronDown, Bot, Share2,
+  Info, Loader2, RotateCcw, FileText, FileJson, FlaskConical, SlidersHorizontal, Tag, Upload,
 } from "lucide-react";
 import { Navbar } from "@/components/Navbar";
 import { BrevitClient, BrevitConfig, JsonOptimizationMode } from "@/lib/brevit-browser";
@@ -173,8 +174,6 @@ export default function PlaygroundPage() {
   const [enableAbbrevs, setEnableAbbrevs] = useState(true);
   const [abbrevThreshold, setAbbrevThreshold] = useState(2);
   const [jsonMode, setJsonMode] = useState<JsonMode>("flatten");
-  const [filterPath, setFilterPath] = useState("");
-
   const [brevitOutput, setBrevitOutput] = useState("");
   const [yamlOutput, setYamlOutput] = useState("");
   const [jsonOutput, setJsonOutput] = useState("");
@@ -193,11 +192,77 @@ export default function PlaygroundPage() {
 
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
   const [configOpen, setConfigOpen] = useState(false);
+  const [selectedSample, setSelectedSample] = useState("");
+  const [uploadError, setUploadError] = useState("");
+  const [uploadedFileName, setUploadedFileName] = useState("");
+  const [isUploading, setIsUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   function copyText(text: string, key: string) {
     navigator.clipboard.writeText(text);
     setCopiedKey(key);
     setTimeout(() => setCopiedKey(null), 2000);
+  }
+
+  const allowedFileTypes = inputType === "json"
+    ? [".json"]
+    : [".txt", ".md", ".csv", ".docx"];
+
+  async function parseDocx(file: File): Promise<string> {
+    const buffer = await file.arrayBuffer();
+    const result = await mammoth.extractRawText({ arrayBuffer: buffer });
+    return result.value.trim();
+  }
+
+  async function handleFileUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploadError("");
+    setUploadedFileName("");
+    setIsUploading(true);
+
+    const lowerName = file.name.toLowerCase();
+    const ext = lowerName.slice(lowerName.lastIndexOf("."));
+    const isAllowed = allowedFileTypes.includes(ext);
+
+    if (!isAllowed) {
+      setUploadError(
+        inputType === "json"
+          ? "JSON mode only accepts .json files."
+          : "Text mode accepts .txt, .md, .csv, or .docx files."
+      );
+      setIsUploading(false);
+      e.target.value = "";
+      return;
+    }
+
+    try {
+      let nextInput = "";
+      if (ext === ".docx") {
+        nextInput = await parseDocx(file);
+      } else {
+        nextInput = await file.text();
+      }
+
+      if (inputType === "json") {
+        const parsed = JSON.parse(nextInput);
+        nextInput = JSON.stringify(parsed, null, 2);
+      }
+
+      setInput(nextInput);
+      setUploadedFileName(file.name);
+      setSelectedSample("");
+    } catch (error) {
+      if (inputType === "json") {
+        setUploadError("Invalid JSON file. Please upload a valid .json file.");
+      } else {
+        setUploadError(`Could not read file: ${String(error)}`);
+      }
+    } finally {
+      setIsUploading(false);
+      e.target.value = "";
+    }
   }
 
   const runBrevit = useCallback(() => {
@@ -288,6 +353,15 @@ export default function PlaygroundPage() {
     if (r) setRatio(Number(r));
   }, []);
 
+  useEffect(() => {
+    setSelectedSample("");
+    setUploadError("");
+    setUploadedFileName("");
+    if (inputType === "text" && activeOutTab !== "brevit") {
+      setActiveOutTab("brevit");
+    }
+  }, [inputType, activeOutTab]);
+
   async function runLlmComparison() {
     if (!isPuterAvailable()) {
       setLlmError("Puter.js is still loading. Please wait a moment and try again.");
@@ -320,7 +394,8 @@ export default function PlaygroundPage() {
   const sentencesBefore = inputType === "text" ? countSentences(input) : 0;
   const sentencesAfter = inputType === "text" ? countSentences(brevitOutput) : 0;
 
-  const TAB_LABELS = ["brevit", "yaml", "json"];
+  const TAB_LABELS = inputType === "json" ? ["brevit", "yaml", "json"] : ["brevit"];
+  const sampleOptions = Object.entries(SAMPLES).filter(([, sample]) => sample.type === inputType);
   const outputs: Record<string, { label: string; content: string; tokens: number }> = {
     brevit: { label: "Brevit", content: brevitOutput, tokens: tokensBrevit },
     yaml: { label: "YAML", content: yamlOutput, tokens: tokensYaml },
@@ -354,26 +429,6 @@ export default function PlaygroundPage() {
               </p>
             </div>
             <div className="flex items-center gap-2">
-              <select
-                onChange={(e) => {
-                  const s = SAMPLES[e.target.value];
-                  if (s) { setInput(s.content); setInputType(s.type); }
-                }}
-                className="text-xs px-3 py-1.5 rounded-lg outline-none cursor-pointer"
-                style={{ background: "var(--hover-bg)", border: "1px solid var(--border)", color: "var(--text-secondary)" }}
-              >
-                <option value="">Load sample…</option>
-                <optgroup label="JSON">
-                  {Object.entries(SAMPLES).filter(([, s]) => s.type === "json").map(([key, s]) => (
-                    <option key={key} value={key}>{s.label}</option>
-                  ))}
-                </optgroup>
-                <optgroup label="Text">
-                  {Object.entries(SAMPLES).filter(([, s]) => s.type === "text").map(([key, s]) => (
-                    <option key={key} value={key}>{s.label}</option>
-                  ))}
-                </optgroup>
-              </select>
               <button
                 onClick={shareUrl}
                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all"
@@ -411,6 +466,52 @@ export default function PlaygroundPage() {
                 </button>
               ))}
             </div>
+
+            <select
+              value={selectedSample}
+              onChange={(e) => {
+                const key = e.target.value;
+                setSelectedSample(key);
+                const sample = SAMPLES[key];
+                if (sample) {
+                  setInput(sample.content);
+                  setUploadError("");
+                  setUploadedFileName("");
+                }
+              }}
+              className="text-xs px-3 py-1.5 rounded-lg outline-none cursor-pointer"
+              style={{ background: "var(--hover-bg)", border: "1px solid var(--border)", color: "var(--text-secondary)" }}
+            >
+              <option value="">Load {inputType} sample…</option>
+              {sampleOptions.map(([key, sample]) => (
+                <option key={key} value={key}>
+                  {sample.label}
+                </option>
+              ))}
+            </select>
+
+            <button
+              onClick={() => fileInputRef.current?.click()}
+              className="flex items-center gap-1.5 text-xs px-2.5 py-1.5 rounded-lg transition-all"
+              style={{ background: "var(--hover-bg)", border: "1px solid var(--border)", color: "var(--text-secondary)" }}
+              title={`Upload ${inputType} file`}
+              disabled={isUploading}
+            >
+              {isUploading ? <Loader2 size={12} className="animate-spin" /> : <Upload size={12} />}
+              {isUploading ? "Reading..." : "Upload"}
+            </button>
+
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept={allowedFileTypes.join(",")}
+              onChange={handleFileUpload}
+              className="hidden"
+            />
+
+            <span className="text-xs" style={{ color: "var(--text-muted)" }}>
+              Allowed: {allowedFileTypes.join(", ")}
+            </span>
 
             <div className="w-px h-5" style={{ background: "var(--border)" }} />
 
@@ -490,6 +591,26 @@ export default function PlaygroundPage() {
               Config
             </button>
           </div>
+
+          {(uploadedFileName || uploadError) && (
+            <div
+              className="mb-5 px-3 py-2 rounded-lg text-xs flex flex-wrap items-center gap-2"
+              style={{
+                background: uploadError ? "rgba(248,113,113,0.08)" : "var(--bg-surface)",
+                border: `1px solid ${uploadError ? "var(--danger)" : "var(--border)"}`,
+                color: uploadError ? "var(--danger)" : "var(--text-secondary)",
+              }}
+            >
+              {uploadError ? (
+                <span>{uploadError}</span>
+              ) : (
+                <>
+                  <span>Loaded file:</span>
+                  <code style={{ color: "var(--accent)" }}>{uploadedFileName}</code>
+                </>
+              )}
+            </div>
+          )}
 
           {/* Config panel */}
           <AnimatePresence>
@@ -712,11 +833,17 @@ export default function PlaygroundPage() {
                 </span>
               </div>
               <div className="space-y-2">
-                {[
-                  { label: "JSON (original)", tokens: tokensBefore, color: "var(--text-muted)" },
-                  { label: "YAML", tokens: tokensYaml, color: "var(--purple)" },
-                  { label: "Brevit", tokens: tokensBrevit, color: "var(--accent)", highlight: true },
-                ].map((item) => {
+                {(inputType === "json"
+                  ? [
+                      { label: "JSON (original)", tokens: tokensBefore, color: "var(--text-muted)" },
+                      { label: "YAML", tokens: tokensYaml, color: "var(--purple)" },
+                      { label: "Brevit", tokens: tokensBrevit, color: "var(--accent)", highlight: true },
+                    ]
+                  : [
+                      { label: "Text (original)", tokens: tokensBefore, color: "var(--text-muted)" },
+                      { label: "Brevit", tokens: tokensBrevit, color: "var(--accent)", highlight: true },
+                    ]
+                ).map((item) => {
                   const pct = tokensBefore > 0 ? (item.tokens / tokensBefore) * 100 : 0;
                   return (
                     <div key={item.label} className="flex items-center gap-3">
