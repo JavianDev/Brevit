@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronDown, Menu, X, ExternalLink, Github, Zap, BookOpen, Code2, FlaskConical, FileText, BarChart3, Layers } from "lucide-react";
+import { ChevronDown, Menu, X, ExternalLink, Github, Zap, BookOpen, Code2, FlaskConical, FileText, BarChart3, Layers, Coffee } from "lucide-react";
 import { Logo } from "./Logo";
 import { ThemeToggle } from "./ThemeToggle";
 import { cn } from "@/lib/utils";
@@ -188,6 +188,18 @@ export function Navbar() {
           <div className="hidden md:flex items-center gap-2">
             <ThemeToggle />
             <Link
+              href="https://buymeacoffee.com/javian"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-sm font-medium transition-all duration-150"
+              style={{ color: "var(--text-secondary)", background: "var(--hover-bg)", border: "1px solid var(--border)" }}
+              onMouseEnter={(e) => { e.currentTarget.style.color = "var(--text-primary)"; }}
+              onMouseLeave={(e) => { e.currentTarget.style.color = "var(--text-secondary)"; }}
+            >
+              <Coffee size={13} />
+              Buy me a coffee
+            </Link>
+            <Link
               href="/playground"
               className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-sm font-medium transition-all duration-150"
               style={{ color: "var(--text-secondary)", background: "var(--hover-bg)", border: "1px solid var(--border)" }}
@@ -255,6 +267,17 @@ export function Navbar() {
                 </div>
               ))}
               <div className="pt-3 pb-2 flex flex-col gap-2">
+                <Link
+                  href="https://buymeacoffee.com/javian"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium"
+                  style={{ background: "rgba(255,255,255,0.06)", color: "var(--text-primary)" }}
+                  onClick={() => setMobileOpen(false)}
+                >
+                  <Coffee size={14} />
+                  Buy me a coffee
+                </Link>
                 <Link
                   href="/playground"
                   className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium"
